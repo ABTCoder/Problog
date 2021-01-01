@@ -1,4 +1,4 @@
-from problog.program import PrologString
+from problog.program import PrologString, PrologFile
 from problog import get_evaluatable
 from problog.engine import DefaultEngine
 from problog.logic import *
@@ -115,7 +115,7 @@ engine = DefaultEngine()
 db = engine.prepare(pl)
 # Per le costanti, in particolare per i numeri, usare Constant(X)
 query_term = Term('doSomething', Constant(1), Constant(2))
-res = engine.query(db, query_term)
+# res = engine.query(db, query_term)
 
 pl = PrologString("""
 0.3::db(1, t, t).
@@ -133,4 +133,22 @@ cnf = CNF.create_from(dag)         # convert to CNF
 ddnnf = DDNNF.create_from(cnf)       # compile CNF to ddnnf
 
 r= ddnnf.evaluate()
-print(r)
+# print(r)
+
+# Test contracciami
+pl = PrologFile("prolog/parser.pl")
+db = engine.prepare(pl)
+query = Term('start')
+res = engine.query(db, query)
+
+
+"""
+:-use_module('nodi.pl').
+:-use_module('db.pl').
+:-use_module('positivo.pl').
+:-use_module('cf.pl').
+:-use_module('predicati.pl').
+:-use_module('parser.pl').
+:-use_module('main_sanita.pl').
+:-use_module('main_utente.pl').
+"""
