@@ -7,7 +7,7 @@
 :-[main_sanita].
 :-[main_utente].
 
-start:-
+start :-
     write("*****CONTRACCIAMI*****"),nl,
     write("Scrivi un numero per scegliere cosa eseguire:"),nl,
     write("1) utilizzo lato utente;"),nl,

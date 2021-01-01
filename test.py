@@ -136,7 +136,7 @@ r= ddnnf.evaluate()
 # print(r)
 
 # Test contracciami
-pl = PrologFile("prolog/parser.pl")
+pl = PrologFile("prolog/predicati.pl")
 db = engine.prepare(pl)
 query = Term('start')
 res = engine.query(db, query)

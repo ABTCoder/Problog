@@ -1,4 +1,4 @@
-avviaUtente:-
+avviaUtente :-
     write("Inserisci:"),
     nl,write("     x per inserire nuovi dati"),
     nl,write("     y per controllare probabilità contagio di un individuo"),nl,
