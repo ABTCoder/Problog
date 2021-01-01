@@ -19,5 +19,5 @@ def concat_list(arg1, arg2):
 
 @problog_export('-term')
 def read():
-    x = input("Inserisci il numero")
+    x = input()
     return Constant(int(x));
