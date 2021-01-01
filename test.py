@@ -1,4 +1,5 @@
 from problog.program import PrologString, PrologFile
+from pyswip import Prolog
 from problog import get_evaluatable
 from problog.engine import DefaultEngine
 from problog.logic import *
@@ -152,3 +153,6 @@ res = engine.query(db, query)
 :-use_module('main_sanita.pl').
 :-use_module('main_utente.pl').
 """
+
+prolog = Prolog()
+prolog.assertz("father(michael,john)")
