@@ -1,5 +1,4 @@
 from problog.program import PrologString, PrologFile
-from pyswip import Prolog
 from problog import get_evaluatable
 from problog.engine import DefaultEngine
 from problog.logic import *
@@ -9,6 +8,7 @@ from problog.sdd_formula import SDD
 from problog.ddnnf_formula import DDNNF
 from problog.cnf_formula import CNF
 
+from pyswip import Prolog, registerForeign
 
 model = """0.3::a. 0.4::b. head :- a,b. query(head)."""
 model2 = """
@@ -142,17 +142,19 @@ db = engine.prepare(pl)
 query = Term('start')
 res = engine.query(db, query)
 
-
-"""
-:-use_module('nodi.pl').
-:-use_module('db.pl').
-:-use_module('positivo.pl').
-:-use_module('cf.pl').
-:-use_module('predicati.pl').
-:-use_module('parser.pl').
-:-use_module('main_sanita.pl').
-:-use_module('main_utente.pl').
-"""
+def read2(x):
+    x = input()
+    return x
+read2.arity = 1
 
 prolog = Prolog()
-prolog.assertz("father(michael,john)")
+prolog.consult("prolog/main.pl")
+print(list(prolog.query("start")))
+
+
+def main():
+    print("main")
+
+
+if __name__ == "__main__":
+    main()

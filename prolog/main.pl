@@ -14,7 +14,7 @@ start :-
     write("2) cerca tutti gli id con contagio probabile;"),nl,
     write("3) inserisci nuovo positivo."),nl,
     write("e --> se vuoi uscire."),nl,
-    read(Scelta),
+    read2(Scelta),
     direziona(Scelta).
 
 direziona(1):-
