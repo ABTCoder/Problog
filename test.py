@@ -10,100 +10,6 @@ from problog.cnf_formula import CNF
 
 from pyswip import Prolog, registerForeign
 
-model = """0.3::a. 0.4::b. head :- a,b. query(head)."""
-model2 = """
-    parent(ann, bob).
-    parent(ann, chris).
-    parent(bob, derek).
-
-    ancestor(X, Y) :- ancestor(X, Z), parent(Z, Y).
-    ancestor(X, Y) :- parent(X, Y).
-    
-    query(ancestor(X,derek)).
-"""
-
-model3 = """
-:- use_module(library(lists)).
-
-test(Piano):- 
-    pianifica([sopra(scimmia,pavimento),                          % stato iniziale
-               sopra(scala,pavimento),
-               in(scimmia,a),
-               in(scala,b),
-               in(banane,c),
-               stato(banane,pendenti)],
-	      [stato(banane,prese)],                                        % goal
-	      Onaip),                                     % lista azioni invertita
-    reverse(Onaip,Piano).
-
-pianifica(Stato, Goal, Piano):-
-    pianifica(Stato, Goal, [], Piano).
-
-
-pianifica(Stato, Goal, Piano, Piano):-
-	sottoinsieme(Goal, Stato), nl,                   % goals verificati: STOP
-	scrivi_soluzione(Piano).
-pianifica(Stato, Goal, PianoParziale, Piano):-
-	operatore(Op, Precondizioni, Cancellandi, Aggiungendi), % selez operatore
-	sottoinsieme(Precondizioni, Stato),  % verifica sussistenza precondizioni
-	\+ member(Op, PianoParziale),       % non ha operatore nel piano parziale
-	lista_differenza(Cancellandi, Stato, Rimanenti),    % opera cancellazioni
-	append(Aggiungendi, Rimanenti, NuovoStato),              % opera aggiunte
-	pianifica(NuovoStato, Goal, [Op|PianoParziale], Piano).
-
-% struttura degli operatori:
-% argomento 1 = nome
-% argomento 2 = precondizioni
-% argomento 3 = delete list
-% argomento 4 = add list
-operatore(si_muove_da_a(X,Y),                                % si_muove_da_a(X,Y)
-    [in(scimmia,X), sopra(scimmia,pavimento)],
-    [in(scimmia,X)],
-    [in(scimmia,Y)]).
-operatore(push(B,X,Y),                                             % push(B,X,Y)
-    [in(scimmia,X), in(B,X), sopra(scimmia,pavimento), sopra(B,pavimento)],
-    [in(scimmia,X), in(B,X)],
-    [in(scimmia,Y), in(B,Y)]).
-operatore(sale_su(B),                                                % sale_su(B)
-    [in(scimmia,X), in(B,X), sopra(scimmia,pavimento), sopra(B,pavimento)],
-    [sopra(scimmia,pavimento)],
-    [sopra(scimmia,B)]).
-operatore(prende(B),                                                  % prende(B)
-    [sopra(scimmia,scala), in(scala,X), in(B,X), stato(B,pendenti)],
-    [stato(B,pendenti)],
-    [stato(B,prese)]).
-
-sottoinsieme([T|Coda], Lista):-
-    member(T, Lista),
-    sottoinsieme(Coda, Lista).
-sottoinsieme([], _).
-
-lista_differenza([Testa|CodaRimuovendi], Lista, ListaDifferenza):-
-    rimuove(Testa, Lista, Rimanenti),
-    lista_differenza(CodaRimuovendi, Rimanenti, ListaDifferenza).
-lista_differenza([], Lista, Lista).
-
-rimuove(X, [X|C], C).
-rimuove(X, [T|C], [T|R]):-
-    rimuove(X, C, R).
-
-scrivi_soluzione([]).
-scrivi_soluzione([H|T]):-
-	scrivi_soluzione(T),
-	write(H), nl.
-    
-query(test(Piano)).
-"""
-
-program = PrologString(model3)
-formula = LogicFormula.create_from(program)
-
-pl1 = formula.to_prolog()
-# print(pl1)
-result = get_evaluatable().create_from(PrologString(model2)).evaluate()
-# print(result)
-
-
 # Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
 # Problog non supporta read\1
 # Tuttavia si può richiamare una funzione python che la implementa (custom_predicates.py)
@@ -142,15 +48,21 @@ db = engine.prepare(pl)
 query = Term('start')
 res = engine.query(db, query)
 
-def read2(x):
-    x = input()
-    return x
-read2.arity = 1
+def py_read(*a):
+    a[0].unify(input("PyInput:"))
+    return True
+
+registerForeign(py_read, arity=1)
 
 prolog = Prolog()
+
 prolog.consult("prolog/main.pl")
 print(list(prolog.query("start")))
 
+pengine_builder = PengineBuilder(urlserver="http://localhost:4242")
+pengine = Pengine(builder=pengine_builder)
+# query = "start"
+# pengine.doAsk(pengine.ask(query))
 
 def main():
     print("main")

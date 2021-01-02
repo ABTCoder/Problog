@@ -7,23 +7,33 @@
 :-[main_sanita].
 :-[main_utente].
 
+
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(pengines)).
+
+server(Port) :- http_server(http_dispatch, [port(Port)]).
+
+:- server(4242).
+
 start :-
-    write("*****CONTRACCIAMI*****"),nl,
-    write("Scrivi un numero per scegliere cosa eseguire:"),nl,
-    write("1) utilizzo lato utente;"),nl,
-    write("2) cerca tutti gli id con contagio probabile;"),nl,
-    write("3) inserisci nuovo positivo."),nl,
-    write("e --> se vuoi uscire."),nl,
-    read2(Scelta),
+    writeln("*****CONTRACCIAMI*****"),
+    writeln("Scrivi un numero per scegliere cosa eseguire:"),
+    writeln("1) utilizzo lato utente;"),
+    writeln("2) cerca tutti gli id con contagio probabile;"),
+    writeln("3) inserisci nuovo positivo."),
+    writeln("e --> se vuoi uscire."),
+    py_read(Scelta),
+    writeln(Scelta),
     direziona(Scelta).
 
-direziona(1):-
+direziona('1'):-
     avviaUtente.
-direziona(2):-
+direziona('2'):-
     cercaAvvisi.
-direziona(3):-
+direziona('3'):-
     insPositivo.
-direziona(e).
+direziona('e').
 direziona(_):-
     write("Valore non consentito"),nl,
     start.
