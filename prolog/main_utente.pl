@@ -2,13 +2,13 @@ avviaUtente :-
     write("Inserisci:"),
     nl,write("     x per inserire nuovi dati"),
     nl,write("     y per controllare probabilità contagio di un individuo"),nl,
-    read(Scelta),
+    py_read(Scelta),
     esecuzione(Scelta).
 
 %inserimento di nuovi dati richiama il parser
 esecuzione(x):-
     write("Inserisci l'id "),
-    read(Id),
+    py_read(Id),
 
     %l'id deve essere univoco
     checkId(Id,X),
@@ -20,12 +20,12 @@ esecuzione(x):-
     %se non viene inserito l'utente non sarà rintracciabile
     %nel momento in cui dovesse diventare positivo sarà obbligatorio inserirlo
     write("Inserisci il cf se vuoi essere avvertito, altrimenti inserisci 'n'"),
-    read(Cf),
+    py_read(Cf),
     insCf(Id,Cf),!.
 
 esecuzione(y):-
-    write("Inserisci l'Id"),
-    read(Id),
+    writeln("Inserisci l'Id"),
+    py_read(Id),
     \+checkPos(Id),
     findall(Prob,cercaMatch(Id,Prob),ProbT),
     somma(ProbT,Sum),

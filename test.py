@@ -1,10 +1,8 @@
 from problog.program import PrologString, PrologFile
-from problog import get_evaluatable
 from problog.engine import DefaultEngine
 from problog.logic import *
 
 from problog.formula import LogicFormula, LogicDAG
-from problog.sdd_formula import SDD
 from problog.ddnnf_formula import DDNNF
 from problog.cnf_formula import CNF
 
@@ -48,9 +46,11 @@ db = engine.prepare(pl)
 query = Term('start')
 res = engine.query(db, query)
 
+
 def py_read(*a):
     a[0].unify(input("PyInput:"))
     return True
+
 
 registerForeign(py_read, arity=1)
 
@@ -59,10 +59,6 @@ prolog = Prolog()
 prolog.consult("prolog/main.pl")
 print(list(prolog.query("start")))
 
-pengine_builder = PengineBuilder(urlserver="http://localhost:4242")
-pengine = Pengine(builder=pengine_builder)
-# query = "start"
-# pengine.doAsk(pengine.ask(query))
 
 def main():
     print("main")
