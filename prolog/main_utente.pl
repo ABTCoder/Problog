@@ -7,8 +7,10 @@ avviaUtente :-
 
 %inserimento di nuovi dati richiama il parser
 esecuzione(x):-
-    write("Inserisci l'id "),
-    py_read(Id),
+    writeln("Inserisci l'id da inserire"),
+    py_read(A),
+
+    atom_string(A,Id), % Conversione in stringa per problemi con l'interfaccia Python
 
     %l'id deve essere univoco
     checkId(Id,X),
@@ -24,8 +26,11 @@ esecuzione(x):-
     insCf(Id,Cf),!.
 
 esecuzione(y):-
-    writeln("Inserisci l'Id"),
-    py_read(Id),
+    writeln("Inserisci l'Id da cercare"),
+    py_read(A),
+
+    atom_string(A,Id), % Conversione in stringa per problemi con l'interfaccia Python
+
     \+checkPos(Id),
     findall(Prob,cercaMatch(Id,Prob),ProbT),
     somma(ProbT,Sum),

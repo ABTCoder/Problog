@@ -23,8 +23,17 @@ direziona('2'):-
     cercaAvvisi.
 direziona('3'):-
     insPositivo.
+direziona('4'):-
+    py_read(Posto),
+    prova(Posto).
 direziona(e).
 direziona(_):-
     write("Valore non consentito"),nl,
     start.
+
+prova(Posto) :-
+    writeln(Posto),
+    atom_string(Posto,Str),
+    place(Id,_,_,_,_,Str),
+    writeln(Id).
 
