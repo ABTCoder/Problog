@@ -6,7 +6,7 @@ from problog.formula import LogicFormula, LogicDAG
 from problog.ddnnf_formula import DDNNF
 from problog.cnf_formula import CNF
 
-from pyswip import Prolog, registerForeign
+from pyswip import Prolog, Functor, Query, registerForeign
 
 # Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
 # Problog non supporta read\1
@@ -47,17 +47,19 @@ query = Term('start')
 res = engine.query(db, query)
 
 
-def py_read(*a):
+def p_read(*a):
     a[0].unify(input("PyInput:"))
     return True
 
 
-registerForeign(py_read, arity=1)
+registerForeign(p_read, arity=1)
 
 prolog = Prolog()
 
 prolog.consult("prolog/main.pl")
-print(list(prolog.query("start")))
+start = Functor("start")
+q = Query(start)
+# print(list(prolog.query("start")))
 
 
 def main():

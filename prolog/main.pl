@@ -14,7 +14,7 @@ start :-
     writeln("2) cerca tutti gli id con contagio probabile;"),
     writeln("3) inserisci nuovo positivo."),
     writeln("e --> se vuoi uscire."),
-    py_read(Scelta),
+    p_read(Scelta),
     direziona(Scelta).
 
 direziona('1'):-
@@ -26,7 +26,7 @@ direziona('3'):-
 direziona('4'):-
     py_read(Posto),
     prova(Posto).
-direziona(e).
+direziona('e').
 direziona(_):-
     write("Valore non consentito"),nl,
     start.

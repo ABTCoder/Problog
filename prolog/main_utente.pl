@@ -2,15 +2,13 @@ avviaUtente :-
     write("Inserisci:"),
     nl,write("     x per inserire nuovi dati"),
     nl,write("     y per controllare probabilità contagio di un individuo"),nl,
-    py_read(Scelta),
+    p_read(Scelta),
     esecuzione(Scelta).
 
 %inserimento di nuovi dati richiama il parser
 esecuzione(x):-
     writeln("Inserisci l'id da inserire"),
-    py_read(A),
-
-    atom_string(A,Id), % Conversione in stringa per problemi con l'interfaccia Python
+    py_read(Id),
 
     %l'id deve essere univoco
     checkId(Id,X),
@@ -27,10 +25,7 @@ esecuzione(x):-
 
 esecuzione(y):-
     writeln("Inserisci l'Id da cercare"),
-    py_read(A),
-
-    atom_string(A,Id), % Conversione in stringa per problemi con l'interfaccia Python
-
+    py_read(Id),
     \+checkPos(Id),
     findall(Prob,cercaMatch(Id,Prob),ProbT),
     somma(ProbT,Sum),

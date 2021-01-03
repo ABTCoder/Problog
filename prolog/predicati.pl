@@ -172,3 +172,11 @@ avviso(P,"alta"):-P>0.6,!.
 avviso(P,"media"):-P>0.4,!.
 avviso(P,"bassa"):-P>0.2,!.
 avviso(_,"trascurabile").
+
+py_read(X) :-
+    p_read(A),
+    atom_string(A,X). % Conversione in stringa per problemi con l'interfaccia Python
+
+py_read_num(X) :-
+    p_read(A),
+    atom_number(A,X). % Conversione in numeri per problemi con l'interfaccia Python
