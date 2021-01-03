@@ -19,7 +19,7 @@ esecuzione(x):-
     %inserimento del codice fiscale,
     %se non viene inserito l'utente non sarà rintracciabile
     %nel momento in cui dovesse diventare positivo sarà obbligatorio inserirlo
-    write("Inserisci il cf se vuoi essere avvertito, altrimenti inserisci 'n'"),
+    writeln("Inserisci il cf se vuoi essere avvertito, altrimenti inserisci 'n'"),
     py_read(Cf),
     insCf(Id,Cf),!.
 

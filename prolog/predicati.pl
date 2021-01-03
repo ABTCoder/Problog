@@ -50,14 +50,14 @@ checkCf(Id):-
     write(Codfisc),nl,!.
 checkCf(Id):-
     \+cf(Id,_),nl,
-    write("CF dello stesso individuo"),nl,
-    read(Cf),
-    inserisciClausola('cf.pl',cf(Id,Cf)).
+    write("Inserisci il codice fiscale dello stesso individuo"),nl,
+    py_read(Cf),
+    inserisciClausola('prolog/cf.pl',cf(Id,Cf)).
 
 % inserisce il codice fiscale, se è stato inserito n non fa niente.
 insCf(_,n):-!.
 insCf(Id,Cf):-
-    inserisciClausola('cf.pl',cf(Id,Cf)),!.
+    inserisciClausola('prolog/cf.pl',cf(Id,Cf)),!.
 
 % controlla se l'id esiste, deve essere univoco al momento
 % dell'inserimento.
@@ -174,9 +174,9 @@ avviso(P,"bassa"):-P>0.2,!.
 avviso(_,"trascurabile").
 
 py_read(X) :-
-    p_read(A),
+    p_read(A), % Funzione in python
     atom_string(A,X). % Conversione in stringa per problemi con l'interfaccia Python
 
 py_read_num(X) :-
-    p_read(A),
+    p_read(A), % Funzione in python
     atom_number(A,X). % Conversione in numeri per problemi con l'interfaccia Python
