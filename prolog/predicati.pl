@@ -15,12 +15,13 @@ traduciData(Y,M,D,H,Mn,Time):-
 % POSSIAMO MIGLIORARLO CALCOLANDO IL TEMPO DI PERMANENZA
 %
 cercaMatch(Persona,Prob):-
+    writeln(Persona),
     place(Persona,TInit1,_,_,TFine1,Place),
     db(Prob,TInit2,_,_,TFine2,Place),
 
-    % controlla se c'è l'interezione
+    % controlla se c'è l'intersezione
     \+(TInit1 > TFine2), \+(TInit2 > TFine1).
-cercaMatch(_,0):-!.
+% cercaMatch(_,0).
 
 % inserisce clausola su file.
 %
@@ -36,7 +37,7 @@ checkPos(Id):-
     write(Id),
     write(" "),
     write("già inserito come positivo. Data tampone: "),
-    write(DataTampone),nl,!.
+    write(DataTampone),nl.
 
 % controllo se il cf per quell'individuo esiste,
 % se non esiste lo richiede.
@@ -91,8 +92,8 @@ checkP(Prob,"ok"):- Prob>=0.2,!.
 
 % se probabilità>1 restituisce p=0.99
 %
-p(P,P3):- P>=1, P3 is 0.99,!.
-p(P,P):- P<1,!.
+p(P,P3):- \+ P = P3,P>=1, P3 is 0.99.
+p(P,P):- P<1.
 
 % crea i nuovi intervalli e li associa alle probabilità corrette
 %

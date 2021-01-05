@@ -8,6 +8,9 @@
 :-[main_utente].
 
 :-use_module('..\custom_predicates.py').
+:-use_module(library(lists)).
+:-use_module(library(cut)).
+
 
 start :-
     writeln("*****CONTRACCIAMI*****"),
@@ -19,13 +22,13 @@ start :-
     read(Scelta),
     direziona(Scelta).
 
-direziona('1'):-
+direziona(1):-
     avviaUtente,
     !.
-direziona('2'):-
+direziona(2):-
     cercaAvvisi,
     !.
-direziona('3'):-
+direziona(3):-
     insPositivo,
     !.
 direziona(e) :- !.
