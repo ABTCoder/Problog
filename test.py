@@ -10,6 +10,10 @@ from pyswip import Prolog, call, registerForeign, PL_new_term_ref, Functor, PL_c
 
 engine = DefaultEngine()
 
+from flask import Flask
+
+app = Flask(__name__)
+
 
 # Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
 # Problog non supporta read\1
@@ -32,16 +36,25 @@ query(infect).
 query_term = Term('doSomething', Constant(1), Constant(2))
 
 
-def problog_goal(program, query):
-    pl = PrologString(program)
-    db = engine.prepare(pl)
+def problog_goal(program, mode, query):
+    if mode == "string":
+        p = PrologString(program)
+    if mode == "file":
+        p = PrologFile(program)
+
+    db = engine.prepare(p)
     res = engine.query(db, query)
+    return res
 
 
-def problog_query(program, query):
-    program += "query("+query+")."
-    pl = PrologString(program)
-    db = engine.prepare(pl)
+def problog_query(program, mode, query):
+    if mode == "string":
+        program += "query(" + query + ")."
+        p = PrologString(program)
+    if mode == "file":
+        p = PrologFile(program)
+
+    db = engine.prepare(p)
 
     lf = LogicFormula.create_from(program)  # ground the program
     dag = LogicDAG.create_from(lf)  # break cycles in the ground program
@@ -49,14 +62,8 @@ def problog_query(program, query):
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
 
     r = ddnnf.evaluate()
-    print(r)
+    return r
 
-
-# Test contracciami
-pl = PrologFile("prolog/predicati.pl")
-db = engine.prepare(pl)
-query = Term('start')
-res = engine.query(db, query)
 
 
 def load_db():
@@ -77,14 +84,20 @@ def p_read(*a):
 
 
 registerForeign(p_read, arity=1)
+# prolog = Prolog()
+# prolog.consult("prolog/main.pl", catcherrors=True)
+# print(list(prolog.query("start")))
 
 
+@app.route('/')
 def main():
-    pr = load_db()
-    problog_query(pr, """infect("univpm")""")
-    prolog = Prolog()
-    prolog.consult("prolog/main.pl", catcherrors=True)
-    print(list(prolog.query("start")))
+    # pr = load_db()
+    pr = "prolog/main.pl"
+    # r = problog_query(pr, "file", """start""")
+    query = Term("start")
+    r = problog_goal(pr, "file", query)
+
+    return term2str(r)
 
 
 if __name__ == "__main__":

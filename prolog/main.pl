@@ -3,9 +3,11 @@
 :-[positivo].
 :-[cf].
 :-[predicati].
-:-[parser].
-:-[main_sanita].
+% :-[parser].
+% :-[main_sanita].
 :-[main_utente].
+
+:-use_module('..\custom_predicates.py').
 
 start :-
     writeln("*****CONTRACCIAMI*****"),
@@ -14,7 +16,7 @@ start :-
     writeln("2) cerca tutti gli id con contagio probabile;"),
     writeln("3) inserisci nuovo positivo."),
     writeln("e --> se vuoi uscire."),
-    p_read(Scelta),
+    read(Scelta),
     direziona(Scelta).
 
 direziona('1'):-
@@ -31,4 +33,5 @@ direziona(_) :-
     write("Valore non consentito"),nl,
     start.
 
+query(start).
 
