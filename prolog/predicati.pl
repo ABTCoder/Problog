@@ -18,7 +18,7 @@ cercaMatch(Persona,Prob):-
     writeln(Persona),
     place(Persona,TInit1,_,_,TFine1,Place),
     db(Prob,TInit2,_,_,TFine2,Place),
-
+    writeln(Prob),
     % controlla se c'è l'intersezione
     \+(TInit1 > TFine2), \+(TInit2 > TFine1).
 % cercaMatch(_,0).
@@ -168,11 +168,11 @@ somma([Y,Z|T],SumP):-
     somma([Sum|T],SumP).
 somma("no",0).
 
-avviso(P,"molto alta"):-P>0.85,!.
-avviso(P,"alta"):-P>0.6,!.
-avviso(P,"media"):-P>0.4,!.
-avviso(P,"bassa"):-P>0.2,!.
-avviso(_,"trascurabile").
+avviso(P,"molto alta"):-P>0.85.
+avviso(P,"alta"):-P>0.6, P<0.85.
+avviso(P,"media"):-P>0.4, P<0.6.
+avviso(P,"bassa"):-P>0.2, P<0.4.
+avviso(P,"trascurabile"):-P<0.2.
 
 py_read(X) :-
     p_read(A), % Funzione in python

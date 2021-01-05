@@ -1,3 +1,4 @@
+from problog import get_evaluatable
 from problog.program import PrologString, PrologFile
 from problog.engine import DefaultEngine
 from problog.logic import *
@@ -47,35 +48,30 @@ def problog_goal(program, mode, query):
     return res
 
 
-def problog_query(program, mode, query):
-    if mode == "string":
-        program += "query(" + query + ")."
-        p = PrologString(program)
-    if mode == "file":
-        p = PrologFile(program)
+def problog_query(query):
+    nodes = ""
+    with open("prolog/nodi.pl", mode="r") as f:
+        for line in f:
+            nodes += line
+    with open("prolog/db.pl", mode="r") as f:
+        for line in f:
+            nodes += line
+    with open("prolog/problog_predicates.pl", mode="r") as f:
+        for line in f:
+            nodes += line
 
+    query_str = "query(" + query + ")."
+    nodes += query_str
+
+    p = PrologString(nodes)
     db = engine.prepare(p)
-
-    lf = LogicFormula.create_from(program)  # ground the program
+    lf = LogicFormula.create_from(p)  # ground the program
     dag = LogicDAG.create_from(lf)  # break cycles in the ground program
     cnf = CNF.create_from(dag)  # convert to CNF
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
 
     r = ddnnf.evaluate()
     return r
-
-
-
-def load_db():
-    # In nessuna clausola probabilistica ci possono essere variabili
-    # Di conseguenza si rimpiazzano le variabili di lat e long in db con una generica x per ora
-    red_nodes = "P::rnode( TI, La, Lo, TF, ID) :- db(P, TI, La, Lo, TF, ID).\ninfect(ID) :- rnode(_,_,_,_,ID).\n"
-    with open("prolog/db.pl", mode="r") as f:
-        for line in f:
-            line = line.replace('_', 'x')
-            red_nodes += line
-    print(red_nodes)
-    return red_nodes
 
 
 def p_read(*a):
@@ -119,10 +115,9 @@ def main():
             if y == 2:
                 print("Inserisci l'Id da cercare")
                 id = input()
-                query = Term("search_prob", Constant(id))
-                r = problog_goal(pr, 'file', query)
-                for args in r:
-                    print(query(*args))
+
+                r = problog_query('infect("'+id+'")')
+                print(r)
 
     return r
 

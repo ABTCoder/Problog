@@ -6,6 +6,7 @@
 % :-[parser].
 % :-[main_sanita].
 :-[main_utente].
+:-[problog_predicates].
 
 :-use_module('..\custom_predicates.py').
 :-use_module(library(lists)).

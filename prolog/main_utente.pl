@@ -48,14 +48,3 @@ esecuzione(y):-
     nl,write(P),nl,nl,!.
 esecuzione(_):-
     nl,write("valore non ammesso").
-
-search_prob(Ids):-
-    Id is "Maria",
-    \+checkPos(Id),
-    findall(Prob,cercaMatch(Id,Prob),ProbT),
-    somma(ProbT,Sum),
-    p(Sum,P), %ARROTONDA A 0.99 SE MAGGIORE DI 1
-    avviso(P,Stringa),
-    nl,write("La probabilità che "),write(Id),
-    write(" sia stato contagiato è "), write(Stringa),
-    nl,write(P),nl,nl,!.
