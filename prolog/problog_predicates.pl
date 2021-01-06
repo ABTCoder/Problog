@@ -1,6 +1,8 @@
-P::rnode(Ti, Lat, Lon, Tf, Place) :- db(P, Ti, Lat, Lon, Tf, Place).
+Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, P) :- Ph is (Span*P)/Span.
 
 infect(Id) :-
-    rnode(Ti1,_,_,Tf1,Place),
+    db(P,Ti1,Lat,Lon,Tf1,Place),
     place(Id, Ti2, _,_, Tf2, Place),
-    \+ Ti1>Tf2, \+Ti2>Tf1.
+    \+ Ti1>Tf2, \+Ti2>Tf1,  % Trovato un math tra db e place si verifica che ci sia intersezione
+    Span is (min(Tf1, Tf2) - max(Ti1, Ti2)),  % Si calcola il tempo di permanenza
+    rnode(Ti1,Lat,Lon,Tf1,Place, Span, P).    % Si richiama

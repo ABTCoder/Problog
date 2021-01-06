@@ -1,20 +1,16 @@
-from problog import get_evaluatable
-from problog.program import PrologString, PrologFile
 from problog.engine import DefaultEngine
+from problog.program import PrologString, PrologFile
 from problog.logic import *
-
-from problog.formula import LogicFormula, LogicDAG
-from problog.ddnnf_formula import DDNNF
-from problog.cnf_formula import CNF
-
-from pyswip import Prolog, call, registerForeign, PL_new_term_ref, Functor, PL_call
-
-engine = DefaultEngine()
 
 from flask import Flask
 
+from custom_predicates import find_user_prob
+
+engine = DefaultEngine()
+
 app = Flask(__name__)
 
+# https://bootswatch.com/materia/
 
 # Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
 # Problog non supporta read\1
@@ -48,43 +44,6 @@ def problog_goal(program, mode, query):
     return res
 
 
-def problog_query(query):
-    nodes = ""
-    with open("prolog/nodi.pl", mode="r") as f:
-        for line in f:
-            nodes += line
-    with open("prolog/db.pl", mode="r") as f:
-        for line in f:
-            nodes += line
-    with open("prolog/problog_predicates.pl", mode="r") as f:
-        for line in f:
-            nodes += line
-
-    query_str = "query(" + query + ")."
-    nodes += query_str
-
-    p = PrologString(nodes)
-    db = engine.prepare(p)
-    lf = LogicFormula.create_from(p)  # ground the program
-    dag = LogicDAG.create_from(lf)  # break cycles in the ground program
-    cnf = CNF.create_from(dag)  # convert to CNF
-    ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
-
-    r = ddnnf.evaluate()
-    return r
-
-
-def p_read(*a):
-    a[0].value = input("PyInput:")
-    return True
-
-
-registerForeign(p_read, arity=1)
-# prolog = Prolog()
-# prolog.consult("prolog/main.pl", catcherrors=True)
-# print(list(prolog.query("start")))
-
-
 @app.route('/')
 def main():
     # pr = load_db()
@@ -116,7 +75,7 @@ def main():
                 print("Inserisci l'Id da cercare")
                 id = input()
 
-                r = problog_query('infect("'+id+'")')
+                r = find_user_prob('infect("'+id+'")', engine)
                 print(r)
 
     return r
