@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
-    <title>Contracciami</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %} Contracciami {% endblock %}
+{% block content %}
     <h1>Cerca la probabilità di un individuo tramite id</h1>
     <form action="{{ url_for('view_prob') }}" method="POST">
         <div class="form-group">
-            <label class="col-form-label col-form-label-lg" for="inputLarge">Large input</label>
-            <input class="form-control form-control-lg" type="text" placeholder=".form-control-lg" id="inputLarge" name="id">
+            <label class="col-form-label col-form-label-lg" for="inputLarge">Id dell'utente</label>
+            <input class="form-control form-control-lg" type="text" placeholder="ID" id="inputLarge" name="id">
         </div>
         <input type="submit" value="Verifica"
             class="btn btn-danger btn-sm">
     </form>
-</body>
-</html>
+    <a href="{{ url_for('view_all') }}" class="btn btn-link">Visualizza tutti gli avvisi</a>
+{% endblock %}
