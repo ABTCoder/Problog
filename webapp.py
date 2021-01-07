@@ -5,7 +5,7 @@ from custom_predicates import find_user_prob, main_parser
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'json'}
 
 engine = DefaultEngine()
 

@@ -12,7 +12,7 @@
             class="btn btn-danger btn-sm">
 </form>
 <a href="{{ url_for('view_all') }}" class="btn btn-link">Visualizza tutti gli avvisi</a>
-<form action="{{ url_for('load_takeout') }}" method="POST">
+<form action="{{ url_for('load_takeout') }}" method="POST" enctype=multipart/form-data>
     <div class="form-group">
       <label for="exampleInputFile">Inserisci il file</label>
       <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" name="file">
