@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, flash, redirect
 from problog.engine import DefaultEngine
-from custom_predicates import find_user_prob
+from custom_predicates import find_user_prob, main_parser
+
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your secret key'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 engine = DefaultEngine()
@@ -53,4 +55,5 @@ def load_takeout():
         flash('No selected file')
         return redirect(request.url)
     if file and allowed_file(file.filename):
+        main_parser('cf_xxx', file)
         return render_template("upload_success.html")

@@ -30,11 +30,11 @@ def read():
     x = input()
     return Constant(int(x));
 
-def main_parser(CF):
+def main_parser(CF, file):
     print("Selezione file json da inserire:")
     # si richiama funzione per selzione file json
-    with open(file_path, 'r') as json_file, open('prolog/nodi.pl', 'a') as nodi_file:
-        json_dict = json.load(json_file)
+    with open('prolog/nodi.pl', 'a') as nodi_file:
+        json_dict = json.load(file)
         for obj in json_dict['timelineObjects']:
             if 'placeVisit' in obj:
                 # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
