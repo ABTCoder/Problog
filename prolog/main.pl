@@ -13,6 +13,11 @@
 :-use_module(library(cut)).
 
 
+%opzioni di funzionamento:
+% 1 inserimento file json (nuovi dati nel db)
+% 2 controllo probabilità contagio singolo individuo
+% 3 controllo probabilità contagio tutti gli individui
+% 4 inserimento positivo
 start :-
     writeln("*****CONTRACCIAMI*****"),
     writeln("Scrivi un numero per scegliere cosa eseguire:"),
