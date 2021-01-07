@@ -6,7 +6,6 @@ from problog.formula import LogicFormula, LogicDAG
 from problog.logic import *
 from problog.program import PrologString
 
-
 #libraries for file explorer management
 import tkinter as tk
 from tkinter import filedialog
@@ -55,12 +54,11 @@ def main_parser(CF, file):
                                str(duration["endTimestampMs"]) + \
                                ', ' + \
                                '"' + \
-                               str(location["name"]) + \
+                               str(location["name"]).replace('"',"'") + \
                                '"' + \
                                ')' + \
                                '.'
                 nodi_file.write(place_string)
-                print("Inserimento terminato con successo!")
             elif 'activitySegment' in obj:
                 # activity(CF, Lat1, Lon1, Lat2, Lon2, T_start, T_end, Activity).
                 startLoc = obj['activitySegment']['startLocation']
@@ -91,7 +89,7 @@ def main_parser(CF, file):
                                ')' + \
                                '.'
                 nodi_file.write(place_string)
-                print("Inserimento terminato con successo!")
+        nodi_file.write('\n')
 
 def find_user_prob(query, engine):
     nodes = ""
