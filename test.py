@@ -4,7 +4,7 @@ from problog.logic import *
 
 from flask import Flask
 
-from custom_predicates import find_user_prob
+from custom_predicates import find_user_prob, main_parser
 
 engine = DefaultEngine()
 
@@ -68,8 +68,8 @@ def main():
                 id = input()
                 query = Term("checkId", Constant(id), None)
                 r = problog_goal(pr, 'file', query)
-                for args in r:
-                    print(query(*args))
+                if list(r[0])[1] == '"ok"':
+                   main_parser(id)
 
             if y == 2:
                 print("Inserisci l'Id da cercare")
