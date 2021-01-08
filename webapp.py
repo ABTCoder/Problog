@@ -45,6 +45,7 @@ def view_all():
         db.session.delete(p)
     for r in rednodes:
         db.session.delete(r)
+    db.session.commit()
 
     u = User(cf="DAUIDAIWUDH", username="Test", positive=False)
     db.session.add(u)
