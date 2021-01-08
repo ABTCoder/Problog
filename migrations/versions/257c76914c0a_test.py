@@ -1,8 +1,8 @@
-"""tables
+"""test
 
-Revision ID: aea3ddd19df5
-Revises: 2315e7c70bc3
-Create Date: 2021-01-08 11:21:07.756816
+Revision ID: 257c76914c0a
+Revises: 
+Create Date: 2021-01-08 12:56:32.694264
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'aea3ddd19df5'
-down_revision = '2315e7c70bc3'
+revision = '257c76914c0a'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -31,6 +31,16 @@ def upgrade():
     op.create_index(op.f('ix_db_lat'), 'db', ['lat'], unique=False)
     op.create_index(op.f('ix_db_long'), 'db', ['long'], unique=False)
     op.create_index(op.f('ix_db_prob'), 'db', ['prob'], unique=False)
+    op.create_table('user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('cf', sa.String(length=16), nullable=True),
+    sa.Column('username', sa.String(length=64), nullable=True),
+    sa.Column('positive', sa.Boolean(), nullable=True),
+    sa.Column('password_hash', sa.String(length=128), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_cf'), 'user', ['cf'], unique=True)
+    op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
     op.create_table('place',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('start', sa.BigInteger(), nullable=False),
@@ -55,6 +65,9 @@ def downgrade():
     op.drop_index(op.f('ix_place_lat'), table_name='place')
     op.drop_index(op.f('ix_place_finish'), table_name='place')
     op.drop_table('place')
+    op.drop_index(op.f('ix_user_username'), table_name='user')
+    op.drop_index(op.f('ix_user_cf'), table_name='user')
+    op.drop_table('user')
     op.drop_index(op.f('ix_db_prob'), table_name='db')
     op.drop_index(op.f('ix_db_long'), table_name='db')
     op.drop_index(op.f('ix_db_lat'), table_name='db')
