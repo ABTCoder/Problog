@@ -26,10 +26,10 @@ class Place(db.Model):
     placeId = db.Column(db.String(100), index=True)
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
-        return '<User {0}, {1}, {2}>'.format(self.id, self.start, self.placeId)
+        return '<Place {0}, {1}, {2}>'.format(self.id, self.start, self.placeId)
 
 
-class RedNodes(db.Model):
+class RedNode(db.Model):
     __tablename__ = 'db'
     prob = db.Column(db.Float(), index=True)
     start = db.Column(db.BigInteger, primary_key=True)
@@ -39,4 +39,4 @@ class RedNodes(db.Model):
     placeId = db.Column(db.String(100), primary_key=True)
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
-        return '<User {0}, {1}, {2}>'.format(self.prob, self.start, self.placeId)
+        return '<RedNode {0}, {1}, {2}>'.format(self.prob, self.start, self.placeId)
