@@ -1,14 +1,9 @@
-from problog import get_evaluatable
 from problog.cnf_formula import CNF
 from problog.ddnnf_formula import DDNNF
 from problog.extern import problog_export
 from problog.formula import LogicFormula, LogicDAG
 from problog.logic import *
 from problog.program import PrologString
-
-#libraries for file explorer management
-import tkinter as tk
-from tkinter import filedialog
 
 import json
 

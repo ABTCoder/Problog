@@ -2,6 +2,9 @@ from problog.engine import DefaultEngine
 from problog.program import PrologString, PrologFile
 from problog.logic import *
 
+import tkinter as tk
+from tkinter import filedialog
+
 from flask import Flask
 
 from custom_predicates import find_user_prob, main_parser
@@ -43,6 +46,11 @@ def problog_goal(program, mode, query):
     res = engine.query(db, query)
     return res
 
+# select json file from file explorer
+def select_file():
+    root = tk.Tk()
+    root.withdraw()
+    return filedialog.askopenfilename()
 
 @app.route('/')
 def main():
@@ -57,29 +65,32 @@ def main():
         print("2) cerca tutti gli id con contagio probabile;")
         print("3) inserisci nuovo positivo.")
         print("e --> se vuoi uscire.")
-        x = int(input())
-        if x == 1:
+        x = input()
+        if x == '1':
             print("Inserisci:")
             print("     1 per inserire nuovi dati")
             print("     2 per controllare probabilità contagio di un individuo")
-            y = int(input())
-            if y == 1:
+            y = input()
+            if y == '1':
                 print("Inserisci l'id da inserire")
                 id = input()
                 query = Term("checkId", Constant(id), None)
                 r = problog_goal(pr, 'file', query)
                 if list(r[0])[1] == '"ok"':
                    main_parser(id)
-
-            if y == 2:
+            if y == '2':
                 print("Inserisci l'Id da cercare")
                 id = input()
 
                 r = find_user_prob('infect("'+id+'")', engine)
                 print(r)
-
-    return r
-
+        if x == '2':
+            print('...')
+        if x == '3':
+            print("Inserisci il CF del paziente:  ")
+            cf = input()
+            #json_path = select_file()
+            #main_parser((cf, ))
 
 if __name__ == "__main__":
     main()
