@@ -35,9 +35,16 @@ def read():
     return Constant(int(x));
 
 
+# Calcolo sigmoide con parametri per la traslazione
+def sigmoid(x, x0, a):
+    return 1 / (1 + math.exp(-(x-x0)/a))
+
+
 @problog_export('+int', '+float', '-float')
 def probability_curve(span, prob):
-    return (span*prob)/span
+    span = float(span/60000)  # Conversione in minuti
+    # print(span)
+    return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
 
 
 def main_parser(CF, file):
