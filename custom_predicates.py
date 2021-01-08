@@ -6,28 +6,39 @@ from problog.formula import LogicFormula, LogicDAG
 from problog.logic import *
 from problog.program import PrologString
 
+
 #libraries for file explorer management
 import tkinter as tk
 from tkinter import filedialog
 
 import json
 
+
 @problog_export('+str', '+str', '-str')
 def concat_str(arg1, arg2):
     return arg1 + arg2
+
 
 @problog_export('+int', '+int', '-int')
 def int_plus(arg1, arg2):
     return arg1 + arg2
 
+
 @problog_export('+list', '+list', '-list')
 def concat_list(arg1, arg2):
     return arg1 + arg2
+
 
 @problog_export('-term')
 def read():
     x = input()
     return Constant(int(x));
+
+
+@problog_export('+int', '+float', '-float')
+def probability_curve(span, prob):
+    return (span*prob)/span
+
 
 def main_parser(CF, file):
     print("Selezione file json da inserire:")
@@ -90,6 +101,7 @@ def main_parser(CF, file):
                                '.'
                 nodi_file.write(place_string)
         nodi_file.write('\n')
+
 
 def find_user_prob(query, engine):
     nodes = ""

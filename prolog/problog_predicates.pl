@@ -1,4 +1,6 @@
-Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, P) :- Ph is (Span*P)/Span.
+:-use_module('custom_predicates.py').
+
+Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, P) :- probability_curve(Span, P, Ph).
 
 infect(Id) :-
     db(P,Ti1,Lat,Lon,Tf1,Place),
