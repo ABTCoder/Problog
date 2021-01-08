@@ -1,6 +1,6 @@
 :- use_module('custom_predicates.py').
 :- use_module(library(db)).
-:- sqlite_load('./app.db').
+:- sqlite_load('app.db').
 
 Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, P) :- probability_curve(Span, P, Ph).
 

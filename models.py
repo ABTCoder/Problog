@@ -18,7 +18,7 @@ class User(db.Model):
 
 
 class Place(db.Model):
-    id = db.Column(db.Integer, db.ForeignKey(User.id), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     start = db.Column(db.BigInteger, primary_key=True)
     lat = db.Column(db.BigInteger, index=True)
     long = db.Column(db.BigInteger, index=True)
