@@ -1,14 +1,23 @@
 from flask import Flask, render_template, request, flash, redirect
+from config import Config
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 from problog.engine import DefaultEngine
 from custom_predicates import find_user_prob, main_parser
 
 
+# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your secret key'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'json'}
+app.config.from_object(Config)
+ALLOWED_EXTENSIONS = {'json'}
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 engine = DefaultEngine()
 
+import models
 
 @app.route('/')
 def index():
