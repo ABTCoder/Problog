@@ -5,7 +5,7 @@ from problog.ddnnf_formula import DDNNF
 
 import json
 
-from models import User, Place, RedNode
+import models
 
 from webapp import db
 
@@ -17,7 +17,7 @@ def main_parser(CF, file):
             # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
             location = obj['placeVisit']['location']
             duration = obj['placeVisit']['duration']
-            p = Place(id=CF,
+            p = models.Place(id=CF,
                       start=duration["startTimestampMs"],
                       lat=location["latitudeE7"],
                       long=location["longitudeE7"],

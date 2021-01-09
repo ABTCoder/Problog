@@ -15,7 +15,8 @@ migrate = Migrate(app, db)
 
 engine = DefaultEngine()
 
-from external_functions import find_user_prob, main_parser
+import external_functions as ef
+
 
 @app.route('/')
 def index():
@@ -25,8 +26,8 @@ def index():
 @app.route('/view', methods=['POST'])
 def view_prob():
     id = request.form['id']
-    query = 'infect("'+id+'")'
-    r = find_user_prob(query, engine)
+    query = 'infect("' + id + '")'
+    r = ef.find_user_prob(query, engine)
     l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
     return render_template("view_prob.html", id=id, prob=r[l[0]])
 
@@ -34,7 +35,7 @@ def view_prob():
 @app.route('/view_all', methods=['GET'])
 def view_all():
     query = "infect(_)"
-    r = find_user_prob(query, engine)
+    r = ef.find_user_prob(query, engine)
     items = []
     for key, value in r.items():
         start = "infect("
@@ -61,5 +62,4 @@ def load_takeout():
         flash('No selected file')
         return redirect(request.url)
     if file and allowed_file(file.filename):
-        main_parser('cf_xxx', file)
         return render_template("upload_success.html")

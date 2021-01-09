@@ -1,7 +1,5 @@
 from models import User, Place, RedNode
 
-
-
 '''
 # TEST
 places = Place.query.all()
