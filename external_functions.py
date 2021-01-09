@@ -3,6 +3,7 @@ from problog.formula import LogicFormula, LogicDAG
 from problog.cnf_formula import CNF
 from problog.ddnnf_formula import DDNNF
 
+
 import json
 
 import models
