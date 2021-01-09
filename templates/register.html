@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Registrati {% endblock %}
+{% block content %}
+<div class="jumbotron" style="text-align: center">
+    <h1 class="display-3">Registrati</h1>
+    <form style="width: 30%; margin: auto">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" style="text-align: center" id="username"  placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <label for="cf">Codice fiscale</label>
+            <input type="text" class="form-control" style="text-align: center" id="cf" aria-describedby="cfhelp" placeholder="Codice fiscale" maxlength="16">
+            <small id="cfhelp" class="form-text text-muted">Puoi aggiunger il codice fiscale in un momento successivo.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" style="text-align: center" id="exampleInputPassword1" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Registrati</button>
+    </form>
+    <p class="lead">Hai già un account? <a href="{{ url_for('view_nodes') }}" class="btn btn-link">Accedi</a></p>
+</div>
+{% endblock %}
