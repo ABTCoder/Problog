@@ -7,7 +7,8 @@ from tkinter import filedialog
 
 from flask import Flask
 
-from custom_predicates import find_user_prob, main_parser
+from external_functions import find_user_prob, main_parser
+
 
 engine = DefaultEngine()
 
@@ -15,36 +16,15 @@ app = Flask(__name__)
 
 # https://bootswatch.com/materia/
 
-# Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
-# Problog non supporta read\1
-# Tuttavia si può richiamare una funzione python che la implementa (custom_predicates.py)
-
-pl = PrologString("""
-:- use_module('custom_predicates.py').
-doSomething(X, Y) :-  read(K), Z is X + Y + K, write(Z).""")
-
-
-pl = PrologString("""
-0.3::db(1, t, t).
-0.6::db(3, t, t).
-0.7::db(2, t, t).
-
-infect :- db(_,_,_).
-query(infect).
-""")
-# Per le costanti, in particolare per i numeri, usare Constant(X)
-query_term = Term('doSomething', Constant(1), Constant(2))
-
-
 def problog_goal(program, mode, query):
     if mode == "string":
         p = PrologString(program)
     if mode == "file":
         p = PrologFile(program)
-
     db = engine.prepare(p)
     res = engine.query(db, query)
     return res
+
 
 # select json file from file explorer
 def select_file():
@@ -52,11 +32,11 @@ def select_file():
     root.withdraw()
     return filedialog.askopenfilename()
 
+
 @app.route('/')
 def main():
     # pr = load_db()
     pr = "prolog/main.pl"
-
     x = ''
     while x is not 'e':
         print("*****CONTRACCIAMI*****")
@@ -94,3 +74,23 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Usare :- use_module(library(lists)) per utilizzare append, member, ecc...
+# Problog non supporta read\1
+# Tuttavia si può richiamare una funzione python che la implementa (custom_predicates.py)
+
+pl = PrologString("""
+:- use_module('custom_predicates.py').
+doSomething(X, Y) :-  read(K), Z is X + Y + K, write(Z).""")
+
+
+pl = PrologString("""
+0.3::db(1, t, t).
+0.6::db(3, t, t).
+0.7::db(2, t, t).
+
+infect :- db(_,_,_).
+query(infect).
+""")
+# Per le costanti, in particolare per i numeri, usare Constant(X)
+query_term = Term('doSomething', Constant(1), Constant(2))

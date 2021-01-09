@@ -5,9 +5,7 @@ from config import Config
 
 from problog.engine import DefaultEngine
 
-from external_functions import find_user_prob, main_parser
 # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
-
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -16,6 +14,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 engine = DefaultEngine()
+
+from external_functions import find_user_prob, main_parser
 
 @app.route('/')
 def index():

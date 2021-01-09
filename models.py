@@ -1,6 +1,5 @@
 from webapp import db
 
-
 # Ad ogni cambiamento:
 # flask db migrate -m "nome migration"
 # flask db upgrade
