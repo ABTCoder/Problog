@@ -1,4 +1,9 @@
-from models import User, Place, RedNode
+from webapp import db
+
+def add_user(user):
+    db.session.add(user)
+    db.session.commit()
+
 
 '''
 # TEST
