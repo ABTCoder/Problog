@@ -45,6 +45,12 @@ def view_all():
     return render_template("view_all.html", items=items)
 
 
+@app.route('/view_nodes', methods=['GET'])
+def view_nodes():
+    places = ef.get_places()
+    return render_template("view_nodes.html", places=places)
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -62,4 +68,5 @@ def load_takeout():
         flash('No selected file')
         return redirect(request.url)
     if file and allowed_file(file.filename):
+        ef.main_parser(555, file)
         return render_template("upload_success.html")

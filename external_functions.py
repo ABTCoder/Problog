@@ -77,6 +77,7 @@ def main_parser(CF, file):
     nodi_file.write('\n')'''
     db.session.commit()
 
+
 def find_user_prob(query, engine):
     nodes = ""
     # caricamento nodi verdi
@@ -101,3 +102,8 @@ def find_user_prob(query, engine):
     r = ddnnf.evaluate()
     # r = get_evaluatable().create_from(lf).evaluate()
     return r
+
+
+def get_places():
+    return models.Place.query.all()
+

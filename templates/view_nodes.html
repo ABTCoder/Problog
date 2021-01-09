@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} Contracciami {% endblock %}
+{% block content %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Inizio</th>
+                <th scope="col">Latitudine</th>
+                <th scope="col">Longitudine</th>
+                <th scope="col">Fine</th>
+                <th scope="col">PlaceId</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for place in places %}
+            <tr class="table-success">
+                <th scope="row">{{place.id}}</th>
+                <td>{{place.start}}</td>
+                <td>{{place.lat}}</td>
+                <td>{{place.long}}</td>
+                <td>{{place.finish}}</td>
+                <td>{{place.placeId}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
