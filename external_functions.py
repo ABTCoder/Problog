@@ -1,4 +1,5 @@
-from problog.program import PrologString
+from problog.logic import Term
+from problog.program import PrologString, PrologFile
 from problog.formula import LogicFormula, LogicDAG
 from problog.cnf_formula import CNF
 from problog.ddnnf_formula import DDNNF
@@ -11,14 +12,14 @@ import models
 from webapp import db
 
 
-def main_parser(CF, file):
+def main_parser(id, file):
     json_dict = json.load(file)
     for obj in json_dict['timelineObjects']:
         if 'placeVisit' in obj:
             # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
             location = obj['placeVisit']['location']
             duration = obj['placeVisit']['duration']
-            p = models.Place(id=CF,
+            p = models.Place(id=id,
                       start=duration["startTimestampMs"],
                       lat=location["latitudeE7"],
                       long=location["longitudeE7"],
@@ -79,7 +80,15 @@ def main_parser(CF, file):
     db.session.commit()
 
 
+def call_prolog_insert_positive(engine):
+    p = PrologFile("prolog/main_sanita.pl")
+    db = engine.prepare(p)
+    query = Term("insertPositive")
+    res = engine.query(db, query)
+
+
 def find_user_prob(query, engine):
+    # TODO passare solo l'id e generare la query string direttamente qui
     nodes = ""
     # caricamento nodi verdi
     with open("prolog/nodi.pl", mode="r") as f:
@@ -109,9 +118,11 @@ def find_user_prob(query, engine):
 def get_places():
     return models.Place.query.all()
 
+
 # Ottieni tutti i nodi rossi
 def get_red_nodes():
     return models.RedNode.query.all()
+
 
 # Ottieni tutti gli utenti
 def get_users():
@@ -125,3 +136,9 @@ def set_user_positive(id, date):
     u.test_date = date
     db.session.commit()
 
+
+# Scrivi nel database un nodo rosso
+def add_rednode(prob,start,lat,long,finish,place):
+    r = models.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, place=place)
+    db.session.add(r)
+    db.session.commit()
