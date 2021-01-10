@@ -2,7 +2,7 @@
 
 {% block title %} Contracciami {% endblock %}
 {% block content %}
-<h1>Cerca la probabilità di un individuo tramite id</h1>
+<!--<h1>Cerca la probabilità di un individuo tramite id</h1>
 <form action="{{ url_for('view_prob') }}" method="POST">
     <div class="form-group">
         <label class="col-form-label col-form-label-lg" for="inputLarge">Id dell'utente</label>
@@ -10,9 +10,15 @@
     </div>
     <input type="submit" value="Verifica"
             class="btn btn-danger btn-sm">
-</form>
+</form>-->
+<h1>Benvenuto {{username|safe}}!</h1>
 <br><br>
-<form action="{{ url_for('insert_positive') }}" method="POST">
+
+<label>La tua probabilità di contagio è: {{prob|safe}}</label>
+
+<br><br>
+
+<!--<form action="{{ url_for('insert_positive') }}" method="POST">
     <div class="form-group">
         <label class="col-form-label col-form-label-lg" for="id_pos">Id dell'utente</label>
         <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
@@ -22,7 +28,7 @@
     <input type="submit" value="Inserisci"
             class="btn btn-danger btn-sm">
 </form>
-<br><br>
+<br><br>-->
 <a href="{{ url_for('view_all') }}" class="btn btn-link">Visualizza tutti gli avvisi</a>
 <a href="{{ url_for('view_users') }}" class="btn btn-link">Visualizza tutti gli utenti</a>
 <a href="{{ url_for('view_nodes') }}" class="btn btn-link">Visualizza tutti i nodi place</a>
@@ -36,9 +42,11 @@
     <input type="submit" value="Carica"
             class="btn btn-danger btn-sm">
 </form>
+<br><br>
 <form action="{{ url_for('logout') }}" method="POST">
     <div class="form-group">
         <button type="submit" value="Logout" style="float:right;" class="btn btn-danger" id="logout">Logout</button>
     </div>
 </form>
+<br><br>
 {% endblock %}
