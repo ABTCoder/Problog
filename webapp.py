@@ -22,7 +22,7 @@ db = SQLAlchemy(app)
 login = LoginManager(app)
 login.login_view = 'login'  # Flask-Login needs to know what is the view function that handles logins
 
-from models import User
+from models import User, load_user
 migrate = Migrate(app, db)
 
 import external_functions as ef
@@ -154,6 +154,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_current_user_ID():
+    internal_id = current_user.get_id()
+    user = load_user(internal_id)
+    return user.id
 
 @app.route('/load_takeout', methods=['POST'])
 @login_required
@@ -168,5 +172,7 @@ def load_takeout():
         flash('No selected file')
         return redirect(request.url)
     if file and allowed_file(file.filename):
-        ef.main_parser(555, file)
+        current_user_id = get_current_user_ID()
+        print(type(current_user_id))
+        ef.main_parser(current_user_id, file)
         return render_template("upload_success.html")
