@@ -4,17 +4,30 @@
 {% block content %}
 <div class="jumbotron" style="text-align: center">
     <h1 class="display-3">Accedi</h1>
-    <form style="width: 30%; margin: auto">
+    <form action="{{ url_for('login') }}" method="POST" style="width: 30%; margin: auto">
+        {{ form.csrf_token }}
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" class="form-control" style="text-align: center" id="username"  placeholder="Username" required>
+            <input type="text" class="form-control" style="text-align: center" id="username" name="username" placeholder="Username" required>
         </div>
+        {% if username_err %}
+        <span style="color: red;">{{ username_err }}</span>
+        {% endif %}
         <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" style="text-align: center" id="exampleInputPassword1" placeholder="Password" required>
+            <label for="password">Password</label>
+            <input type="password" class="form-control" style="text-align: center" id="password" name="password" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-primary">Accedi</button>
+        {% if password_err %}
+        <span style="color: red;">{{ password_err }}</span>
+        {% endif %}
+        <div class="form-group">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="remember_me" checked="">
+                <label class="custom-control-label" for="remember_me">Ricordami</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="access">Accedi</button>
     </form>
-    <p class="lead">Non hai un account? <a href="{{ url_for('view_nodes') }}" class="btn btn-link">Registrati</a></p>
+    <p class="lead">Non hai un account? <a href="{{ url_for('register') }}" class="btn btn-link">Registrati</a></p>
 </div>
 {% endblock %}
