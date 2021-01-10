@@ -17,11 +17,11 @@
             {% for node in red_nodes %}
             <tr class="table-success">
                 <th scope="row">{{node.prob}}</th>
-                <td>{{place.start}}</td>
-                <td>{{place.lat}}</td>
-                <td>{{place.long}}</td>
-                <td>{{place.finish}}</td>
-                <td>{{place.placeId}}</td>
+                <td>{{node.start}}</td>
+                <td>{{node.lat}}</td>
+                <td>{{node.long}}</td>
+                <td>{{node.finish}}</td>
+                <td>{{node.placeId}}</td>
             </tr>
             {% endfor %}
         </tbody>
