@@ -80,7 +80,7 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
+    return render_template("index.html", username=get_current_username(), prob=get_current_prob())
 
 
 @app.route('/insert_positive', methods=['POST'])
@@ -158,6 +158,17 @@ def get_current_user_ID():
     internal_id = current_user.get_id()
     user = load_user(internal_id)
     return user.id
+
+def get_current_username():
+    internal_id = current_user.get_id()
+    user = load_user(internal_id)
+    return user.username
+
+def get_current_prob():
+    query = 'infect("' + str(get_current_user_ID()) + '")'
+    r = ef.find_user_prob(query, engine)
+    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
+    return r[l[0]]
 
 @app.route('/load_takeout', methods=['POST'])
 @login_required
