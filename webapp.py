@@ -70,7 +70,8 @@ def login():
     return render_template('login.html', title='access', form=form)
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -79,18 +80,7 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    print(current_user.is_authenticated)
     return render_template("index.html")
-
-
-@app.route('/view', methods=['POST'])
-@login_required
-def view_prob():
-    id = request.form['id']
-    query = 'infect("' + id + '")'
-    r = ef.find_user_prob(query, engine)
-    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
-    return render_template("view_prob.html", id=id, prob=r[l[0]])
 
 
 @app.route('/insert_positive', methods=['POST'])
@@ -104,6 +94,16 @@ def insert_positive():
     date_millis = dt_obj.timestamp() * 1000
     ef.set_user_positive(id, int(date_millis))
     return redirect(url_for('index'))
+
+
+@app.route('/view', methods=['POST'])
+@login_required
+def view_prob():
+    id = request.form['id']
+    query = 'infect("' + id + '")'
+    r = ef.find_user_prob(query, engine)
+    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
+    return render_template("view_prob.html", id=id, prob=r[l[0]])
 
 
 @app.route('/view_all', methods=['GET'])
@@ -128,12 +128,11 @@ def view_nodes():
     return render_template("view_nodes.html", places=places)
 
 
-@app.template_filter('ctime')
-def timectime(s):
-    if s is not None:
-        s = int(s / 1000)
-        return datetime.fromtimestamp(s)
-    return "N/A"
+@app.route('/view_red_nodes', methods=['GET'])
+@login_required
+def view_red_nodes():
+    rnodes = ef.get_red_nodes()
+    return render_template("view_rnodes.html", red_nodes=rnodes)
 
 
 @app.route('/view_users', methods=['GET'])
@@ -141,6 +140,14 @@ def timectime(s):
 def view_users():
     users = ef.get_users()
     return render_template("view_users.html", users=users)
+
+
+@app.template_filter('ctime')
+def timectime(s):
+    if s is not None:
+        s = int(s / 1000)
+        return datetime.fromtimestamp(s)
+    return "N/A"
 
 
 def allowed_file(filename):

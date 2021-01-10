@@ -109,6 +109,9 @@ def find_user_prob(query, engine):
 def get_places():
     return models.Place.query.all()
 
+# Ottieni tutti i nodi rossi
+def get_red_nodes():
+    return models.RedNode.query.all()
 
 # Ottieni tutti gli utenti
 def get_users():
