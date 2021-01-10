@@ -1,51 +1,3 @@
-
-% inserisce clausola su file.
-%
-inserisciClausola(Path,Clausola):-
-    open(Path,append,Stream),
-    portray_clause(Stream,Clausola),
-    close(Stream).
-
-% controlla se ID_UTENTE è già positivo
-%
-checkPos(Id):-
-    positivo(Id,DataTampone),nl,
-    write(Id),
-    write(" "),
-    write("già inserito come positivo. Data tampone: "),
-    write(DataTampone),nl.
-
-% controllo se il cf per quell'individuo esiste,
-% se non esiste lo richiede.
-% Predicato che viene richiamato dall'inserimento di un nuovo positivo.
-%
-checkCf(Id):-
-    cf(Id,Codfisc),nl,
-    write("Il codice fiscale di "),
-    write(Id),
-    write(" è già inserito: "),
-    write(Codfisc),nl.
-checkCf(Id):-
-    \+cf(Id,_),nl,
-    write("Inserisci il codice fiscale dello stesso individuo"),nl,
-    py_read(Cf),
-    inserisciClausola('prolog/cf.pl',cf(Id,Cf)).
-
-% inserisce il codice fiscale, se è stato inserito n non fa niente.
-insCf(_,n).
-insCf(Id,Cf):-
-    inserisciClausola('prolog/cf.pl',cf(Id,Cf)).
-
-% controlla se l'id esiste, deve essere univoco al momento
-% dell'inserimento.
-%
-checkId(Id,"ok"):-
-    \+place(Id,_,_,_,_,_),
-    write("Id utente accettato! ").
-checkId(Id,"esiste"):-
-    place(Id,_,_,_,_,_),
-    write("Questo id esiste già!").
-
 %controlla il tempo dalla data del tampone e restituisce la probabilità:
 %   - entro 7 giorni dalla data del tampone -> alta
 %   - dai 7 ai 14 giorni -> media
@@ -66,10 +18,7 @@ c(Dt,Tf,0.1):- Tf=<(Dt-(20*86400000))                         % oltre 15 giorni
 checkP(Prob,"stop"):- Prob<0.2.
 checkP(Prob,"ok"):- Prob>=0.2.
 
-% se probabilità>1 restituisce p=0.99
-%
-p(P,P3):- \+ P = P3,P>=1, P3 is 0.99.
-p(P,P):- P<1.
+
 
 % crea i nuovi intervalli e li associa alle probabilità corrette
 %
@@ -130,35 +79,3 @@ t(Place,Ti1,La1,Lo1,Tf1,Ti2,La2,Lo2,Tf2,P1,_,P3,"si"):-
     midpoint(La,Lo,La2,Lo2,La3,Lo3),
     assert(nodorosso(P1,Ti1,La1,Lo1,Ti2,Place)),
     assert(nodorosso(P3,Ti2,La3,Lo3,Tf1,Place)).  %caso1 e 2, Tf1=Tf2
-
-% rimozione di duplicati in modo ricorsivo da una lista.
-%
-rimuovi_duplicati([H|T],List):-
-    member(H,T),
-    rimuovi_duplicati(T,List).
-rimuovi_duplicati([H|T],[H|T1]):-
-    \+member(H,T),
-    rimuovi_duplicati(T,T1).
-rimuovi_duplicati([],[]).
-
-% somma ricorsiva
-%
-somma([X],X).
-somma([Y,Z|T],SumP):-
-    Sum is Y+Z,
-    somma([Sum|T],SumP).
-somma("no",0).
-
-avviso(P,"molto alta"):-P>0.85.
-avviso(P,"alta"):-P>0.6, P<0.85.
-avviso(P,"media"):-P>0.4, P<0.6.
-avviso(P,"bassa"):-P>0.2, P<0.4.
-avviso(P,"trascurabile"):-P<0.2.
-
-py_read(X) :-
-    p_read(A), % Funzione in python
-    atom_string(A,X). % Conversione in stringa per problemi con l'interfaccia Python
-
-py_read_num(X) :-
-    p_read(A), % Funzione in python
-    atom_number(A,X). % Conversione in numeri per problemi con l'interfaccia Python

@@ -1,3 +1,5 @@
+import codecs
+
 from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
 from problog.formula import LogicFormula, LogicDAG
@@ -81,7 +83,12 @@ def main_parser(id, file):
 
 
 def call_prolog_insert_positive(engine, user_id, date):
-    p = PrologFile("prolog/main_sanita.pl")
+    # p = PrologFile("prolog/main_sanita.pl")
+    p = ""
+    with codecs.open("prolog/main_sanita.pl", "r", "utf-16") as f:
+        for line in f:
+            p += line
+    p = PrologString(p)
     db = engine.prepare(p)
     query = Term("insertPositive", Constant(user_id), Constant(date))
     res = engine.query(db, query)
