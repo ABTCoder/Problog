@@ -1,5 +1,6 @@
 from problog.extern import problog_export, problog_export_raw, problog_export_nondet
 from problog.logic import *
+import haversine as hs
 import external_functions as ef
 
 
@@ -37,7 +38,41 @@ def probability_curve(span, prob):
     return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
 
 
-@problog_export_nondet('+int', '+int')
-def insert_positive(user_id, date):
-    ef.set_user_positive(user_id, date)
-    return [()]
+@problog_export_nondet('+int','+int','+int','+int')
+def close(la1, lo1, la2, lo2):
+    loc1 = (la1 / (10 ^ 7), lo1 / (10 ^ 7))
+    loc2 = (la2 / (10 ^ 7), lo2 / (10 ^ 7))
+    dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
+    if dist < 20:
+        print("Distance: "+dist)
+        return [()]
+    else:
+        return []
+
+
+@problog_export('+int','+int','+int','+int','-int','-int')
+def midpoint(la1, lo1, la2, lo2):
+#Input values as degrees
+
+#Convert to radians
+    lat1 = math.radians(la1 / (10 ^ 7))
+    lon1 = math.radians(lo1 / (10 ^ 7))
+    lat2 = math.radians(la2 / (10 ^ 7))
+    lon2 = math.radians(lo2 / (10 ^ 7))
+
+
+    bx = math.cos(lat2) * math.cos(lon2 - lon1)
+    by = math.cos(lat2) * math.sin(lon2 - lon1)
+    lat3 = math.atan2(math.sin(lat1) + math.sin(lat2), \
+           math.sqrt((math.cos(lat1) + bx) * (math.cos(lat1) \
+           + bx) + by**2))
+    lon3 = lon1 + math.atan2(by, math.cos(lat1) + bx)
+
+    la_final = int(round(math.degrees(lat3), 2)*(10 ^ 7))
+    lo_final = int(round(math.degrees(lon3), 2)*(10 ^ 7))
+    return la_final, lo_final
+
+
+@problog_export('+float','+int','+int','+int','+int','+str')
+def add_rednode(prob, start, lat, long, finish, place):
+    ef.add_rednode(prob, start, lat, long, finish, place)
