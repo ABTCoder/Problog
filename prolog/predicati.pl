@@ -1,27 +1,3 @@
-% traduzione da timestamp a data/ora.
-%
-traduciTime(Time,[Y,M,D,H,Mn]):-
-    TimeSec is Time/1000,                     %elimina i millisecondi
-    stamp_date_time(TimeSec,date(Y,M,D,H,Mn,_,_,_,_),local).
-
-% traduzione da data/ora a timestamp.
-%
-traduciData(Y,M,D,H,Mn,Time):-
-    date_time_stamp(date(Y,M,D,H,Mn,0.0,-3600,'ora solare Europa Occidentale',false),Dt),
-    Dti is truncate(Dt),
-    Time is Dti*1000.                         %in millisecondi come su GTO
-
-% trova un nodo verde di un ID_INDIVIDUO che matcha con uno rosso.
-% POSSIAMO MIGLIORARLO CALCOLANDO IL TEMPO DI PERMANENZA
-%
-cercaMatch(Persona,Prob):-
-    writeln(Persona),
-    place(Persona,TInit1,_,_,TFine1,Place),
-    db(Prob,TInit2,_,_,TFine2,Place),
-    writeln(Prob),
-    % controlla se c'è l'intersezione
-    \+(TInit1 > TFine2), \+(TInit2 > TFine1).
-% cercaMatch(_,0).
 
 % inserisce clausola su file.
 %

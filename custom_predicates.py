@@ -1,5 +1,6 @@
-from problog.extern import problog_export
+from problog.extern import problog_export, problog_export_raw, problog_export_nondet
 from problog.logic import *
+import external_functions as ef
 
 
 @problog_export('+str', '+str', '-str')
@@ -32,4 +33,11 @@ def sigmoid(x, x0, a):
 def probability_curve(span, prob):
     span = float(span/60000)  # Conversione in minuti
     # print(span)
+    # meglio 16 e 2.5
     return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
+
+
+@problog_export_nondet('+int', '+int')
+def insert_positive(user_id, date):
+    ef.set_user_positive(user_id, date)
+    return [()]

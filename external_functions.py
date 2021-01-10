@@ -105,6 +105,20 @@ def find_user_prob(query, engine):
     return r
 
 
+# Ottieni tutti i nodi place
 def get_places():
     return models.Place.query.all()
+
+
+# Ottieni tutti gli utenti
+def get_users():
+    return models.User.query.all()
+
+
+# Imposta l'utente come positivo nel database
+def set_user_positive(id, date):
+    u = models.User.query.get(id)
+    u.positive = True
+    u.test_date = date
+    db.session.commit()
 

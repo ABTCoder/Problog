@@ -3,6 +3,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from datetime import datetime, time
 
 from problog.engine import DefaultEngine
 
@@ -15,21 +16,22 @@ ALLOWED_EXTENSIONS = {'json'}
 
 # Flask - DB initialization
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+
 
 # Flask - Login initialization
 login = LoginManager(app)
 login.login_view = 'login'  # Flask-Login needs to know what is the view function that handles logins
 
-engine = DefaultEngine()
+from models import User
+migrate = Migrate(app, db)
 
 import external_functions as ef
 
 import db_functions as df
 
-from models import User
-
 import forms
+
+engine = DefaultEngine()
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -91,6 +93,19 @@ def view_prob():
     return render_template("view_prob.html", id=id, prob=r[l[0]])
 
 
+@app.route('/insert_positive', methods=['POST'])
+@login_required
+def insert_positive():
+    id = request.form['id']
+    date = request.form['date']
+    d = date.split('T')
+    dt_obj = datetime.strptime(date,
+                               '%Y-%m-%dT%H:%M')
+    date_millis = dt_obj.timestamp() * 1000
+    ef.set_user_positive(id, int(date_millis))
+    return redirect(url_for('index'))
+
+
 @app.route('/view_all', methods=['GET'])
 @login_required
 def view_all():
@@ -111,6 +126,21 @@ def view_all():
 def view_nodes():
     places = ef.get_places()
     return render_template("view_nodes.html", places=places)
+
+
+@app.template_filter('ctime')
+def timectime(s):
+    if s is not None:
+        s = int(s / 1000)
+        return datetime.fromtimestamp(s)
+    return "N/A"
+
+
+@app.route('/view_users', methods=['GET'])
+@login_required
+def view_users():
+    users = ef.get_users()
+    return render_template("view_users.html", users=users)
 
 
 def allowed_file(filename):
