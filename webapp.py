@@ -93,6 +93,7 @@ def insert_positive():
                                '%Y-%m-%dT%H:%M')
     date_millis = dt_obj.timestamp() * 1000
     ef.set_user_positive(id, int(date_millis))
+    ef.call_prolog_insert_positive(engine, id, date_millis)
     return redirect(url_for('index'))
 
 

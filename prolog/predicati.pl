@@ -24,7 +24,7 @@ checkCf(Id):-
     write("Il codice fiscale di "),
     write(Id),
     write(" è già inserito: "),
-    write(Codfisc),nl,!.
+    write(Codfisc),nl.
 checkCf(Id):-
     \+cf(Id,_),nl,
     write("Inserisci il codice fiscale dello stesso individuo"),nl,
@@ -32,9 +32,9 @@ checkCf(Id):-
     inserisciClausola('prolog/cf.pl',cf(Id,Cf)).
 
 % inserisce il codice fiscale, se è stato inserito n non fa niente.
-insCf(_,n):-!.
+insCf(_,n).
 insCf(Id,Cf):-
-    inserisciClausola('prolog/cf.pl',cf(Id,Cf)),!.
+    inserisciClausola('prolog/cf.pl',cf(Id,Cf)).
 
 % controlla se l'id esiste, deve essere univoco al momento
 % dell'inserimento.
@@ -63,8 +63,8 @@ c(Dt,Tf,0.1):- Tf=<(Dt-(20*86400000))                         % oltre 15 giorni
 % controlla se la probabilità è trascurabile, in quel caso restituisce
 % "stop" per dire di fermarsi.
 %
-checkP(Prob,"stop"):- Prob<0.2,!.
-checkP(Prob,"ok"):- Prob>=0.2,!.
+checkP(Prob,"stop"):- Prob<0.2.
+checkP(Prob,"ok"):- Prob>=0.2.
 
 % se probabilità>1 restituisce p=0.99
 %
@@ -139,7 +139,7 @@ rimuovi_duplicati([H|T],List):-
 rimuovi_duplicati([H|T],[H|T1]):-
     \+member(H,T),
     rimuovi_duplicati(T,T1).
-rimuovi_duplicati([],[]):-!.
+rimuovi_duplicati([],[]).
 
 % somma ricorsiva
 %

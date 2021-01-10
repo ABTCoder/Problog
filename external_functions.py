@@ -1,4 +1,4 @@
-from problog.logic import Term
+from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
 from problog.formula import LogicFormula, LogicDAG
 from problog.cnf_formula import CNF
@@ -80,10 +80,10 @@ def main_parser(id, file):
     db.session.commit()
 
 
-def call_prolog_insert_positive(engine):
+def call_prolog_insert_positive(engine, user_id, date):
     p = PrologFile("prolog/main_sanita.pl")
     db = engine.prepare(p)
-    query = Term("insertPositive")
+    query = Term("insertPositive", Constant(user_id), Constant(date))
     res = engine.query(db, query)
 
 
