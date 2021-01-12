@@ -146,6 +146,6 @@ def set_user_positive(id, date):
 
 # Scrivi nel database un nodo rosso
 def add_rednode(prob,start,lat,long,finish,place):
-    r = models.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, place=place)
+    r = models.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
     db.session.add(r)
     db.session.commit()

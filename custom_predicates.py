@@ -44,7 +44,7 @@ def close(la1, lo1, la2, lo2):
     loc2 = (la2 / (10 ^ 7), lo2 / (10 ^ 7))
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
     if dist < 20:
-        print("Distance: "+dist)
+        print("Distance: "+str(dist))
         return [()]
     else:
         return []
@@ -75,5 +75,12 @@ def midpoint(la1, lo1, la2, lo2):
 
 @problog_export_nondet('+float','+int','+int','+int','+int','+str')
 def add_rednode(prob, start, lat, long, finish, place):
+    print("{} {} {} {} {} {}".format(prob, start, lat, long, finish, place))
     ef.add_rednode(prob, start, lat, long, finish, place)
+    return [()]
+
+
+@problog_export_nondet('+str')
+def print_test(string):
+    print(string)
     return [()]
