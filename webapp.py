@@ -22,7 +22,7 @@ db = SQLAlchemy(app)
 login = LoginManager(app)
 login.login_view = 'login'  # Flask-Login needs to know what is the view function that handles logins
 
-from models import User, load_user
+from models import User, load_user, Place
 migrate = Migrate(app, db)
 
 import external_functions as ef
@@ -93,7 +93,7 @@ def insert_positive():
                                '%Y-%m-%dT%H:%M')
     date_millis = dt_obj.timestamp() * 1000
     ef.set_user_positive(id, int(date_millis))
-    ef.call_prolog_insert_positive(engine, id, date_millis)
+    ef.call_prolog_insert_positive(engine, id, int(date_millis))
     return redirect(url_for('index'))
 
 
@@ -125,6 +125,13 @@ def view_all():
 @app.route('/view_nodes', methods=['GET'])
 @login_required
 def view_nodes():
+    '''places = ef.get_places()
+    for p in places:
+        db.session.delete(p)
+    db.session.commit()
+    p = Place(id=5, start=4000000, lat=5555555, long=3333333, finish=4500000, placeId='"Roma"')
+    db.session.add(p)
+    db.session.commit()'''
     places = ef.get_places()
     return render_template("view_nodes.html", places=places)
 
@@ -132,8 +139,21 @@ def view_nodes():
 @app.route('/view_red_nodes', methods=['GET'])
 @login_required
 def view_red_nodes():
+    '''rnodes = ef.get_red_nodes()
+    for r in rnodes:
+        db.session.delete(r)
+    db.session.commit()'''
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
+
+@app.route('/clean_red_nodes', methods=['POST'])
+@login_required
+def clean_red_nodes():
+    rnodes = ef.get_red_nodes()
+    for r in rnodes:
+        db.session.delete(r)
+    db.session.commit()
+    return render_template("index.html")
 
 
 @app.route('/view_users', methods=['GET'])

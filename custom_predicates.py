@@ -40,8 +40,8 @@ def probability_curve(span, prob):
 
 @problog_export_nondet('+int','+int','+int','+int')
 def close(la1, lo1, la2, lo2):
-    loc1 = (la1 / (10 ^ 7), lo1 / (10 ^ 7))
-    loc2 = (la2 / (10 ^ 7), lo2 / (10 ^ 7))
+    loc1 = (la1 / 1E7, lo1 / 1E7)
+    loc2 = (la2 / 1E7, lo2 / 1E7)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
     if dist < 20:
         print("Distance: "+str(dist))
@@ -57,10 +57,10 @@ def midpoint(la1, lo1, la2, lo2):
 #Input values as degrees
 
 #Convert to radians
-    lat1 = math.radians(la1 / (10 ^ 7))
-    lon1 = math.radians(lo1 / (10 ^ 7))
-    lat2 = math.radians(la2 / (10 ^ 7))
-    lon2 = math.radians(lo2 / (10 ^ 7))
+    lat1 = math.radians(la1 / 1E7)
+    lon1 = math.radians(lo1 / 1E7)
+    lat2 = math.radians(la2 / 1E7)
+    lon2 = math.radians(lo2 / 1E7)
 
 
     bx = math.cos(lat2) * math.cos(lon2 - lon1)
@@ -70,8 +70,8 @@ def midpoint(la1, lo1, la2, lo2):
            + bx) + by**2))
     lon3 = lon1 + math.atan2(by, math.cos(lat1) + bx)
 
-    la_final = int(round(math.degrees(lat3), 2)*(10 ^ 7))
-    lo_final = int(round(math.degrees(lon3), 2)*(10 ^ 7))
+    la_final = int(round(math.degrees(lat3), 2)*1E7)
+    lo_final = int(round(math.degrees(lon3), 2)*1E7)
     return la_final, lo_final
 
 
