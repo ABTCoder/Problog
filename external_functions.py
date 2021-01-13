@@ -6,10 +6,9 @@ from problog.formula import LogicFormula, LogicDAG
 from problog.cnf_formula import CNF
 from problog.ddnnf_formula import DDNNF
 
-
 import json
 
-import models
+import models as m
 
 from webapp import db
 
@@ -21,12 +20,12 @@ def main_parser(id, file):
             # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
             location = obj['placeVisit']['location']
             duration = obj['placeVisit']['duration']
-            p = models.Place(id=id,
-                      start=duration["startTimestampMs"],
-                      lat=location["latitudeE7"],
-                      long=location["longitudeE7"],
-                      finish=duration["endTimestampMs"],
-                      placeId=location["name"])
+            p = m.Place(id=id,
+                             start=duration["startTimestampMs"],
+                             lat=location["latitudeE7"],
+                             long=location["longitudeE7"],
+                             finish=duration["endTimestampMs"],
+                             placeId=location["name"])
             db.session.add(p)
             '''place_string = '\nplace' + \
                            '(' + \
@@ -123,29 +122,33 @@ def find_user_prob(query, engine):
 
 # Ottieni tutti i nodi place
 def get_places():
-    return models.Place.query.all()
+    return m.Place.query.all()
 
 
 # Ottieni tutti i nodi rossi
 def get_red_nodes():
-    return models.RedNode.query.all()
+    return m.RedNode.query.all()
 
 
 # Ottieni tutti gli utenti
 def get_users():
-    return models.User.query.all()
+    return m.User.query.all()
 
 
 # Imposta l'utente come positivo nel database
 def set_user_positive(id, date):
-    u = models.User.query.get(id)
+    u = m.User.query.get(id)
     u.positive = True
     u.test_date = date
     db.session.commit()
 
 
 # Scrivi nel database un nodo rosso
-def add_rednode(prob,start,lat,long,finish,place):
-    r = models.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
-    db.session.add(r)
-    db.session.commit()
+def add_rednode(prob, start, lat, long, finish, place):
+    exists = db.session.query(db.exists().where(m.RedNode.start==start and m.RedNode.placeId==place)).scalar()
+    if not exists:
+        r = m.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
+        db.session.add(r)
+        db.session.commit()
+    else:
+        print("Instance already exists")
