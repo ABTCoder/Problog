@@ -39,18 +39,12 @@ def probability_curve(span, prob):
     return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
 
 
-@problog_export_nondet('+int','+int','+int','+int')
-def close(la1, lo1, la2, lo2):
+@problog_export('+int','+int','+int','+int', '-float')
+def geo_distance(la1, lo1, la2, lo2):
     loc1 = (la1 / 1E7, lo1 / 1E7)
     loc2 = (la2 / 1E7, lo2 / 1E7)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
-    if dist < 20:
-        print("Distance: "+str(dist))
-        print(loc1)
-        print(loc2)
-        return [()]
-    else:
-        return []
+    return dist
 
 
 @problog_export('+int','+int','+int','+int','-int','-int')

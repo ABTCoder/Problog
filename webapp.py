@@ -115,7 +115,6 @@ def cut_prob(prob):
 @app.route('/view_all', methods=['GET'])
 @login_required
 def view_all():
-    logout_user()
     query = "infect(_)"
     r = ef.find_user_prob(query, engine)
     items = []
