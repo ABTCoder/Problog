@@ -152,3 +152,11 @@ def add_rednode(prob, start, lat, long, finish, place):
         db.session.commit()
     else:
         print("Instance already exists")
+
+
+# Elimina tutti i nodi rossi
+def clean_red_nodes():
+    rnodes = m.RedNode.query.all()
+    for r in rnodes:
+        db.session.delete(r)
+    db.session.commit()

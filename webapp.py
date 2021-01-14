@@ -146,14 +146,12 @@ def view_red_nodes():
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
 
+
 @app.route('/clean_red_nodes', methods=['POST'])
 @login_required
 def clean_red_nodes():
-    rnodes = ef.get_red_nodes()
-    for r in rnodes:
-        db.session.delete(r)
-    db.session.commit()
-    return render_template("index.html")
+    ef.clean_red_nodes()
+    return redirect(url_for('index'))
 
 
 @app.route('/view_users', methods=['GET'])
@@ -175,21 +173,25 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def get_current_user_ID():
     internal_id = current_user.get_id()
     user = load_user(internal_id)
     return user.id
+
 
 def get_current_username():
     internal_id = current_user.get_id()
     user = load_user(internal_id)
     return user.username
 
+
 def get_current_prob():
     query = 'infect("' + str(get_current_user_ID()) + '")'
     r = ef.find_user_prob(query, engine)
     l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
     return r[l[0]]
+
 
 @app.route('/load_takeout', methods=['POST'])
 @login_required
