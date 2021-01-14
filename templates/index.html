@@ -33,7 +33,7 @@
 <div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
   <div class="card-header">Probabilità di contagio</div>
   <div class="card-body">
-    <h4 class="card-title">Molto alta</h4>
+    <h4 class="card-title">Alta</h4>
     <p class="card-text"> {{prob| cut_prob}} </p>
   </div>
 </div>
@@ -41,15 +41,15 @@
 <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
   <div class="card-header">Probabilità di contagio</div>
   <div class="card-body">
-    <h4 class="card-title">Molto alta</h4>
+    <h4 class="card-title">Media</h4>
     <p class="card-text"> {{prob| cut_prob}} </p>
   </div>
 </div>
 {% else %}
-<div class="card text-white bg-secondary mb-3" style="max-width: 20rem;">
+<div class="card bg-secondary mb-3" style="max-width: 20rem;">
   <div class="card-header">Probabilità di contagio</div>
   <div class="card-body">
-    <h4 class="card-title">Molto alta</h4>
+    <h4 class="card-title">Bassa</h4>
     <p class="card-text"> {{prob| cut_prob}} </p>
   </div>
 </div>
