@@ -147,6 +147,12 @@ def add_rednode(prob, start, lat, long, finish, place):
     else:
         print("Instance already exists")
 
+# Elimina tutti i nodi rossi
+def clean_green_nodes():
+    gnodes = m.Place.query.all()
+    for g in gnodes:
+        db.session.delete(g)
+    db.session.commit()
 
 # Elimina tutti i nodi rossi
 def clean_red_nodes():

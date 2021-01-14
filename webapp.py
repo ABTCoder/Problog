@@ -152,6 +152,11 @@ def view_red_nodes():
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
 
+@app.route('/clean_green_nodes', methods=['POST'])
+@login_required
+def clean_green_nodes():
+    ef.clean_green_nodes()
+    return redirect(url_for('index'))
 
 @app.route('/clean_red_nodes', methods=['POST'])
 @login_required
