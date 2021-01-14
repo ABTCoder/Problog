@@ -132,6 +132,11 @@ def set_user_positive(id, date):
     db.session.commit()
 
 
+def is_positive(id):
+    u = m.User.query.get(id)
+    return u.positive
+
+
 # Scrivi nel database un nodo rosso
 def add_rednode(prob, start, lat, long, finish, place):
     exists = db.session.query(db.exists().where(m.RedNode.start==start and m.RedNode.placeId==place)).scalar()

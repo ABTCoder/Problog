@@ -13,8 +13,48 @@
 </form>-->
 <h1>Benvenuto {{username|safe}}!</h1>
 <br><br>
-
-<label>La tua probabilità di contagio è: {{prob| cut_prob}}</label>
+{% if positive %}
+<div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
+  <div class="card-header">Attenzione</div>
+  <div class="card-body">
+    <h4 class="card-title">Sei già positivo!</h4>
+  </div>
+</div>
+{% else %}
+{% if prob >= 0.85 %}
+<div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
+  <div class="card-header">Probabilità di contagio</div>
+  <div class="card-body">
+    <h4 class="card-title">Molto alta</h4>
+    <p class="card-text"> {{prob| cut_prob}} </p>
+  </div>
+</div>
+{% elif (prob >= 0.6) and (prob < 0.85) %}
+<div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
+  <div class="card-header">Probabilità di contagio</div>
+  <div class="card-body">
+    <h4 class="card-title">Molto alta</h4>
+    <p class="card-text"> {{prob| cut_prob}} </p>
+  </div>
+</div>
+{% elif (prob >= 0.4) and (prob < 0.6) %}
+<div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+  <div class="card-header">Probabilità di contagio</div>
+  <div class="card-body">
+    <h4 class="card-title">Molto alta</h4>
+    <p class="card-text"> {{prob| cut_prob}} </p>
+  </div>
+</div>
+{% else %}
+<div class="card text-white bg-secondary mb-3" style="max-width: 20rem;">
+  <div class="card-header">Probabilità di contagio</div>
+  <div class="card-body">
+    <h4 class="card-title">Molto alta</h4>
+    <p class="card-text"> {{prob| cut_prob}} </p>
+  </div>
+</div>
+{% endif %}
+{% endif %}
 
 <br><br>
 

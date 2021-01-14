@@ -55,17 +55,17 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    flash('login user')
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = forms.LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None :
+        if user is None:
             return render_template('login.html', title='access', form=form, username_err="Invalid username")
         if not user.check_password(form.password.data):
             return render_template('login.html', title='access', form=form, password_err="Invalid password")
         login_user(user, remember=form.remember_me.data)
+        flash("Hai effettuato l'accesso!")
         return redirect(url_for('index'))
     return render_template('login.html', title='access', form=form)
 
@@ -74,26 +74,30 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html", username=get_current_username(), prob=get_current_prob())
+    return render_template("index.html", username=get_current_username(), prob=get_current_prob(),
+                           positive=ef.is_positive(get_current_user_ID()))
 
 
 @app.route('/insert_positive', methods=['POST'])
 @login_required
 def insert_positive():
     id = request.form['id']
-    date = request.form['date']
-    d = date.split('T')
-    dt_obj = datetime.strptime(date,
-                               '%Y-%m-%dT%H:%M')
-    date_millis = dt_obj.timestamp() * 1000
-    ef.set_user_positive(id, int(date_millis))
-    ef.call_prolog_insert_positive(engine, id, int(date_millis))
+    if ef.is_positive(id):
+        flash("L'utente è già positivo!")
+    else:
+        date = request.form['date']
+        d = date.split('T')
+        dt_obj = datetime.strptime(date,
+                                   '%Y-%m-%dT%H:%M')
+        date_millis = dt_obj.timestamp() * 1000
+        ef.set_user_positive(id, int(date_millis))
+        ef.call_prolog_insert_positive(engine, id, int(date_millis))
     return redirect(url_for('index'))
 
 
