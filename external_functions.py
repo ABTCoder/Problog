@@ -93,30 +93,19 @@ def call_prolog_insert_positive(engine, user_id, date):
     res = engine.query(db, query)
 
 
-def find_user_prob(query, engine):
-    # TODO passare solo l'id e generare la query string direttamente qui
-    nodes = ""
-    # caricamento nodi verdi
-    with open("prolog/nodi.pl", mode="r") as f:
+def find_user_prob(id, engine):
+    p = ""
+    with open("prolog/problog_predicates.pl", "r") as f:
         for line in f:
-            nodes += line
-    # caricamento nodi rossi
-    with open("prolog/db.pl", mode="r") as f:
-        for line in f:
-            nodes += line
-    with open("prolog/problog_predicates.pl", mode="r") as f:
-        for line in f:
-            nodes += line
-    query_str = "query(" + query + ")."
-    nodes += query_str
-    p = PrologString(nodes)
+            p += line
+        p += "query(infect(" + str(id) + "))."
+    p = PrologString(p)
     db = engine.prepare(p)
     lf = LogicFormula.create_from(p)  # ground the program
     dag = LogicDAG.create_from(lf)  # break cycles in the ground program
     cnf = CNF.create_from(dag)  # convert to CNF
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
-    # r = get_evaluatable().create_from(lf).evaluate()
     return r
 
 

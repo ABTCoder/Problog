@@ -101,11 +101,13 @@ def insert_positive():
 @login_required
 def view_prob():
     id = request.form['id']
-    query = 'infect("' + id + '")'
-    r = ef.find_user_prob(query, engine)
+    r = ef.find_user_prob(id, engine)
     l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
     return render_template("view_prob.html", id=id, prob=r[l[0]])
 
+@app.template_filter('cut_prob')
+def cut_prob(prob):
+    return "{:.2f}".format(prob)
 
 @app.route('/view_all', methods=['GET'])
 @login_required
@@ -187,8 +189,8 @@ def get_current_username():
 
 
 def get_current_prob():
-    query = 'infect("' + str(get_current_user_ID()) + '")'
-    r = ef.find_user_prob(query, engine)
+    id = get_current_user_ID()
+    r = ef.find_user_prob(id, engine)
     l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
     return r[l[0]]
 
@@ -207,6 +209,5 @@ def load_takeout():
         return redirect(request.url)
     if file and allowed_file(file.filename):
         current_user_id = get_current_user_ID()
-        print(type(current_user_id))
         ef.main_parser(current_user_id, file)
         return render_template("upload_success.html")
