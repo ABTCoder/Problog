@@ -83,7 +83,7 @@ def add_rednode(prob, start, lat, long, finish, place):
     return [()]
 
 
-@problog_export_nondet
+@problog_export_nondet()
 def delete_old_nodes():
     ef.clean_red_nodes()
     return [()]
