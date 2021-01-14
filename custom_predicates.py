@@ -35,6 +35,7 @@ def probability_curve(span, prob):
     span = float(span/60000)  # Conversione in minuti
     # print(span)
     # meglio 16 e 2.5
+    # 1 - (1-prob1)*(1-prob2)
     return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
 
 

@@ -41,7 +41,6 @@ def register():
     form = forms.RegistrationForm()
     # validate_on_submit() method is going to return False in case the function skips the if
     # statement and goes directly to render the template in the last line of the function
-    flash('Registrazione user')
     if request.method == "POST" and form.validate_on_submit():
         user = User(username=form.username.data)  # , email=form.email.data)
         user.set_password(form.password.data)
