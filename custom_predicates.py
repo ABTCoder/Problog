@@ -30,13 +30,16 @@ def sigmoid(x, x0, a):
     return 1 / (1 + math.exp(-(x-x0)/a))
 
 
-@problog_export('+int', '+float', '-float')
-def probability_curve(span, prob):
+@problog_export('+int', '+float', '+float', '-float')
+def probability_curve(span, dist, prob):
     span = float(span/60000)  # Conversione in minuti
-    # print(span)
-    # meglio 16 e 2.5
-    # 1 - (1-prob1)*(1-prob2)
-    return prob * sigmoid(span, 20, 4.5)  # Sigmoide con centro in 20 e valore ~1 a 40 minuti
+    final = prob * sigmoid(span, 1, -0.3) * sigmoid(dist, 5, 1.5)
+    """
+    prob1 = prob * sigmoid(span, 20, 4.5)  # Sigmoide per il tempo di permanenza (minuti)
+    prob2 = prob * sigmoid(dist, 4, -1.4)  # Sigmoide per la distanza (metri)
+    final = 1 - (1-prob1)*(1-prob2)
+    """
+    return final
 
 
 @problog_export('+int','+int','+int','+int', '-float')
