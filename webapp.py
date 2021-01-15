@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, Response
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -108,9 +108,11 @@ def view_prob():
     l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
     return render_template("view_prob.html", id=id, prob=r[l[0]])
 
+
 @app.template_filter('cut_prob')
 def cut_prob(prob):
     return "{:.2f}".format(prob)
+
 
 @app.route('/view_all', methods=['GET'])
 @login_required
@@ -150,17 +152,37 @@ def view_red_nodes():
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
 
+
 @app.route('/clean_green_nodes', methods=['POST'])
 @login_required
 def clean_green_nodes():
     ef.clean_green_nodes()
     return redirect(url_for('index'))
 
+
 @app.route('/clean_red_nodes', methods=['POST'])
 @login_required
 def clean_red_nodes():
     ef.clean_red_nodes()
     return redirect(url_for('index'))
+
+
+@app.route('/reset_users', methods=['POST'])
+@login_required
+def reset_users():
+    ef.reset_users()
+    return redirect(url_for('index'))
+
+
+@app.route("/download_json")
+@login_required
+def download_generated_takeout():
+    json_string = ef.generate_random_takeout()
+    return Response(
+        json_string,
+        mimetype="application/json",
+        headers={"Content-disposition":
+                 "attachment; filename=generated_json.json"})
 
 
 @app.route('/view_users', methods=['GET'])

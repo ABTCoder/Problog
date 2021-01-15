@@ -2,7 +2,7 @@
 :- use_module(library(db)).
 :- sqlite_load('app.db').
 
-Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, P) :- probability_curve(Span, Dist, P, Ph).
+Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, Dist, P) :- probability_curve(Span, Dist, P, Ph).
 
 infect(Id) :-
     db(P,Ti1,Lat,Lon,Tf1,Place),

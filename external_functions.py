@@ -1,4 +1,5 @@
 import codecs
+import datetime
 
 from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
@@ -7,6 +8,7 @@ from problog.cnf_formula import CNF
 from problog.ddnnf_formula import DDNNF
 
 import json
+import random
 
 import models as m
 
@@ -147,6 +149,7 @@ def add_rednode(prob, start, lat, long, finish, place):
     else:
         print("Instance already exists")
 
+
 # Elimina tutti i nodi rossi
 def clean_green_nodes():
     gnodes = m.Place.query.all()
@@ -154,9 +157,63 @@ def clean_green_nodes():
         db.session.delete(g)
     db.session.commit()
 
+
 # Elimina tutti i nodi rossi
 def clean_red_nodes():
     rnodes = m.RedNode.query.all()
     for r in rnodes:
         db.session.delete(r)
     db.session.commit()
+
+
+# Rimette tutti gli utenti a negativo
+def reset_users():
+    users = m.User.query.all()
+    for u in users:
+        u.positive = False
+        u.test_date = None
+    db.session.commit()
+
+
+def generate_random_takeout():
+    random.seed()
+    dt_obj = datetime.strptime("2020-01-01 12:00",
+                               '%Y-%m-%d %H:%M')
+    start_time = dt_obj.timestamp() * 1000
+    time_step = 900000  # 15 minuti in millisecondi
+    start_time += random.randrange(0, 8)*time_step
+
+    timeline = []
+    for i in range(10):
+        place = random.choice(places)
+        elem = {"placeVisit": {
+                    "location": {
+                        "latitudeE7": place[1],
+                        "longitudeE7": place[2],
+                        "name": place[0]
+                    },
+                    "duration": {
+                        "startTimestampMs": start_time,
+                        "endTimestampMs": start_time + random.randrange(1,8)*time_step
+                    }
+                }}
+        timeline.append(elem)
+        start_time += random.randrange(9, 32)*time_step
+
+    return json.dump(timeline)
+
+
+places = [("Via G. Spataro, 14", 426775091, 137287389,),
+          ("Marche Polytechnic University - Faculty of Engineering", 435867790, 135165950),
+          ("Teatro Sperimentale", 436135866, 135152479,),
+          ("Med Store Ancona", 436175400, 135152900),
+          ("Pizzeria Paola Ancona", 436178800, 135155200),
+          ("Piazza del Plebiscito", 436195700, 135118400),
+          ("Cattedrale di San Ciriaco", 436253900, 135103000),
+          ("Fontana dei due Soli", 436251700, 135032000),
+          ("Rustico Ristorante Pizzeria", 435855700, 135176300),
+          ("La Cittadella di Ancona", 436111400, 135126900),
+          ("Laghetti del Passetto - Parco Pubblico", 436134400, 135364800),
+          ("Parcheggio Stamira", 436161600, 135154400),
+          ("C.M.E. Marche", 436160000, 135107000),
+          ("CONAD", 436147000, 135298100)]

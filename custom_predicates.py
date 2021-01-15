@@ -2,6 +2,7 @@ from problog.extern import problog_export, problog_export_raw, problog_export_no
 from problog.logic import *
 import haversine as hs
 import external_functions as ef
+import numpy as np
 
 
 @problog_export('+str', '+str', '-str')
@@ -27,13 +28,13 @@ def read():
 
 # Calcolo sigmoide con parametri per la traslazione
 def sigmoid(x, x0, a):
-    return 1 / (1 + math.exp(-(x-x0)/a))
+    return 1 / (1 + np.exp(-(x-x0)/a))
 
 
 @problog_export('+int', '+float', '+float', '-float')
 def probability_curve(span, dist, prob):
     span = float(span/60000)  # Conversione in minuti
-    final = prob * sigmoid(span, 1, -0.3) * sigmoid(dist, 5, 1.5)
+    final = prob * sigmoid(dist, 1, -0.3) * sigmoid(span, 5, 1.5)
     """
     prob1 = prob * sigmoid(span, 20, 4.5)  # Sigmoide per il tempo di permanenza (minuti)
     prob2 = prob * sigmoid(dist, 4, -1.4)  # Sigmoide per la distanza (metri)
@@ -47,6 +48,7 @@ def geo_distance(la1, lo1, la2, lo2):
     loc1 = (la1 / 1E7, lo1 / 1E7)
     loc2 = (la2 / 1E7, lo2 / 1E7)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
+    print(dist)
     return dist
 
 
