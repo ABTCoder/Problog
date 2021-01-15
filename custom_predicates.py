@@ -45,10 +45,16 @@ def probability_curve(span, dist, prob):
 
 @problog_export('+int','+int','+int','+int', '-float')
 def geo_distance(la1, lo1, la2, lo2):
-    loc1 = (la1 / 1E7, lo1 / 1E7)
-    loc2 = (la2 / 1E7, lo2 / 1E7)
+
+    loc1 = (np.double(la1) / 1E7, np.double(lo1)/ 1E7)
+    loc2 = (np.double(la2) / 1E7, np.double(lo2) / 1E7)
+    print(la1)
+    print(la2)
+    print(lo1)
+    print(lo2)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
-    print(dist)
+    print(str(dist) +" loc1: "+ str(loc1)+" loc2: "+ str(loc2))
+
     return dist
 
 
@@ -70,8 +76,8 @@ def midpoint(la1, lo1, la2, lo2):
            + bx) + by**2))
     lon3 = lon1 + math.atan2(by, math.cos(lat1) + bx)
 
-    la_final = int(round(math.degrees(lat3), 2)*1E7)
-    lo_final = int(round(math.degrees(lon3), 2)*1E7)
+    la_final = int(math.degrees(lat3)*1E7)
+    lo_final = int(math.degrees(lon3)*1E7)
     return la_final, lo_final
 
 

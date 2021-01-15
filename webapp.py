@@ -239,4 +239,5 @@ def load_takeout():
     if file and allowed_file(file.filename):
         current_user_id = get_current_user_ID()
         ef.main_parser(current_user_id, file)
-        return render_template("upload_success.html")
+        flash("Il takeout è stato caricato correttamente!")
+        return redirect(url_for("index"))

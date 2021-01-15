@@ -174,6 +174,8 @@ def reset_users():
         u.test_date = None
     db.session.commit()
 
+def rand_loc():
+    return random.randrange(-50, 50)
 
 def generate_random_takeout():
     random.seed()
@@ -184,12 +186,12 @@ def generate_random_takeout():
     start_time += random.randrange(0, 8)*time_step
 
     timeline = []
-    for i in range(10):
+    for i in range(30):
         place = random.choice(places)
         elem = {"placeVisit": {
                     "location": {
-                        "latitudeE7": place[1],
-                        "longitudeE7": place[2],
+                        "latitudeE7": place[1] +rand_loc(),
+                        "longitudeE7": place[2] +rand_loc(),
                         "name": place[0]
                     },
                     "duration": {
