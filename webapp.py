@@ -174,7 +174,7 @@ def reset_users():
     return redirect(url_for('index'))
 
 
-@app.route("/download_json")
+@app.route("/download_json", methods=['POST'])
 @login_required
 def download_generated_takeout():
     json_string = ef.generate_random_takeout()

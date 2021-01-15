@@ -1,5 +1,5 @@
 import codecs
-import datetime
+from datetime import datetime
 
 from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
@@ -199,8 +199,8 @@ def generate_random_takeout():
                 }}
         timeline.append(elem)
         start_time += random.randrange(9, 32)*time_step
-
-    return json.dump(timeline)
+    obj = {"timelineObjects": timeline}
+    return json.dumps(obj)
 
 
 places = [("Via G. Spataro, 14", 426775091, 137287389,),
