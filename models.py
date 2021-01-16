@@ -13,10 +13,12 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cf = db.Column(db.String(16), index=True, unique=True) # Codice Fiscale
     username = db.Column(db.String(64), index=True, unique=True)
-    # email = db.Column(db.String(120), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
     test_date = db.Column(db.BigInteger)
     positive = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(128))
+
+    role = db.Column(db.String(10), default="user")
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
         return '<User {}>'.format(self.username)
@@ -56,3 +58,4 @@ class RedNode(db.Model):
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
         return '<RedNode {0}, {1}, {2}>'.format(self.prob, self.start, self.placeId)
+

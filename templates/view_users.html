@@ -8,8 +8,10 @@
                 <th scope="col">ID</th>
                 <th scope="col">Codice fiscale</th>
                 <th scope="col">Username</th>
+                <th scope="col">Email</th>
                 <th scope="col">Positivo</th>
                 <th scope="col">Data tampone</th>
+                <th scoèe="col">Permessi</th>
             </tr>
         </thead>
         <tbody>
@@ -18,8 +20,10 @@
                 <th scope="row">{{u.id}}</th>
                 <td>{{u.cf}}</td>
                 <td>{{u.username}}</td>
+                <td>{{u.email}}</td>
                 <td>{{u.positive}}</td>
                 <td>{{u.test_date | ctime}}</td>
+                <td>{{u.role}}</td>
             </tr>
             {% endfor %}
         </tbody>

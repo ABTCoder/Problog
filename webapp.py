@@ -1,9 +1,11 @@
+from functools import wraps
+
 from flask import Flask, render_template, request, flash, redirect, url_for, Response
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from datetime import datetime, time
+from datetime import datetime
 
 from problog.engine import DefaultEngine
 
@@ -16,6 +18,7 @@ ALLOWED_EXTENSIONS = {'json'}
 
 # Flask - DB initialization
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 # Flask - Login initialization
@@ -23,13 +26,12 @@ login = LoginManager(app)
 login.login_view = 'login'  # Flask-Login needs to know what is the view function that handles logins
 
 from models import User, load_user, Place
-migrate = Migrate(app, db)
 
 import external_functions as ef
 
-import db_functions as df
-
 import forms
+
+from decorators_filters import admin_required, health_required, cut_prob, timectime
 
 engine = DefaultEngine()
 
@@ -42,9 +44,9 @@ def register():
     # validate_on_submit() method is going to return False in case the function skips the if
     # statement and goes directly to render the template in the last line of the function
     if request.method == "POST" and form.validate_on_submit():
-        user = User(username=form.username.data)  # , email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
-        df.add_user(user)  # external function for db population
+        ef.add_user(user)  # external function for db population
         flash('Congratulazioni, hai un account!')
         return redirect(url_for('login'))
         # render_template() takes a template filename and a variable list of template arguments and returns
@@ -69,8 +71,7 @@ def login():
     return render_template('login.html', title='access', form=form)
 
 
-@app.route('/logout', methods=['POST'])
-@login_required
+@app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('login'))
@@ -81,6 +82,30 @@ def logout():
 def index():
     return render_template("index.html", username=get_current_username(), prob=get_current_prob(),
                            positive=ef.is_positive(get_current_user_ID()))
+
+
+@app.route('/add_health_worker', methods=['POST'])
+@login_required
+@admin_required
+def add_health_worker():
+    form = forms.RegistrationForm()
+    # validate_on_submit() method is going to return False in case the function skips the if
+    # statement and goes directly to render the template in the last line of the function
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, role="health")
+        user.set_password(form.password.data)
+        ef.add_user(user)  # external function for db population
+        flash("Hai aggiunto l'account sanitario: " + user.username)
+        return redirect(url_for('admin_functions'))
+    return render_template("admin.html", form=form)
+
+
+@app.route('/admin_functions')
+@login_required
+@admin_required
+def admin_functions():
+    form = forms.RegistrationForm()
+    return render_template("admin.html", form=form)
 
 
 @app.route('/insert_positive', methods=['POST'])
@@ -105,13 +130,8 @@ def insert_positive():
 def view_prob():
     id = request.form['id']
     r = ef.find_user_prob(id, engine)
-    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
+    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è in un formato strano (non stringa)
     return render_template("view_prob.html", id=id, prob=r[l[0]])
-
-
-@app.template_filter('cut_prob')
-def cut_prob(prob):
-    return "{:.2f}".format(prob)
 
 
 @app.route('/view_all', methods=['GET'])
@@ -131,13 +151,6 @@ def view_all():
 @app.route('/view_nodes', methods=['GET'])
 @login_required
 def view_nodes():
-    '''places = ef.get_places()
-    for p in places:
-        db.session.delete(p)
-    db.session.commit()
-    p = Place(id=5, start=4000000, lat=5555555, long=3333333, finish=4500000, placeId='"Roma"')
-    db.session.add(p)
-    db.session.commit()'''
     places = ef.get_places()
     return render_template("view_nodes.html", places=places)
 
@@ -145,10 +158,6 @@ def view_nodes():
 @app.route('/view_red_nodes', methods=['GET'])
 @login_required
 def view_red_nodes():
-    '''rnodes = ef.get_red_nodes()
-    for r in rnodes:
-        db.session.delete(r)
-    db.session.commit()'''
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
 
@@ -160,6 +169,13 @@ def clean_green_nodes():
     return redirect(url_for('index'))
 
 
+@app.route('/clean_user_green_nodes', methods=['POST'])
+@login_required
+def clean_user_green_nodes():
+    ef.clean_user_green_nodes(get_current_user_ID())
+    return redirect(url_for('index'))
+
+
 @app.route('/clean_red_nodes', methods=['POST'])
 @login_required
 def clean_red_nodes():
@@ -167,10 +183,17 @@ def clean_red_nodes():
     return redirect(url_for('index'))
 
 
-@app.route('/reset_users', methods=['POST'])
+@app.route('/reset_all_users', methods=['POST'])
 @login_required
-def reset_users():
-    ef.reset_users()
+def reset_all_users():
+    ef.reset_all_users()
+    return redirect(url_for('index'))
+
+
+@app.route('/reset_user', methods=['POST'])
+@login_required
+def reset_user():
+    ef.reset_user(get_current_user_ID())
     return redirect(url_for('index'))
 
 
@@ -192,12 +215,7 @@ def view_users():
     return render_template("view_users.html", users=users)
 
 
-@app.template_filter('ctime')
-def timectime(s):
-    if s is not None:
-        s = int(s / 1000)
-        return datetime.fromtimestamp(s)
-    return "N/A"
+
 
 
 def allowed_file(filename):
@@ -241,3 +259,6 @@ def load_takeout():
         ef.main_parser(current_user_id, file)
         flash("Il takeout è stato caricato correttamente!")
         return redirect(url_for("index"))
+
+
+

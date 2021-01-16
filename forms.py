@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
     cf = StringField('cf')
-    # email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('password', validators=[DataRequired()])
     submit = SubmitField('register')
 
@@ -27,13 +27,14 @@ class RegistrationForm(FlaskForm):
             print('Username utilizzato')
             raise ValidationError('Username utilizzato. Riprova')
 
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError('Email già utilizzata. Riprova')
 
     '''def validate_cf(self, cf):
         cf = User.query.filter_by(cf=cf.data).first()
         if cf is not None:
             raise ValidationError('Codice fiscale precedentemente inserito. Controlla e riprova!')'''
 
-    '''def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError('Please use a different email address.')'''
+

@@ -77,22 +77,34 @@
 <form action="{{ url_for('clean_green_nodes') }}" method="POST">
     <div class="form-group">
     <input type="submit" value="Elimina nodi verdi"
-            class="btn btn-danger btn-sm">
+            class="btn btn-success btn-sm">
     </div>
 </form>
-<br><br>
+<form action="{{ url_for('clean_user_green_nodes') }}" method="POST">
+    <div class="form-group">
+    <input type="submit" value="Elimina nodi verdi di {{current_user.username}}"
+            class="btn btn-success btn-sm">
+    </div>
+</form>
 <form action="{{ url_for('clean_red_nodes') }}" method="POST">
     <div class="form-group">
     <input type="submit" value="Elimina nodi rossi"
             class="btn btn-danger btn-sm">
     </div>
 </form>
-<form action="{{ url_for('reset_users') }}" method="POST">
+<form action="{{ url_for('reset_all_users') }}" method="POST">
     <div class="form-group">
     <input type="submit" value="Reset degli utenti"
-            class="btn btn-danger btn-sm">
+            class="btn btn-primary btn-sm">
     </div>
 </form>
+<form action="{{ url_for('reset_user') }}" method="POST">
+    <div class="form-group">
+    <input type="submit" value="Reset di {{current_user.username}}"
+            class="btn btn-primary btn-sm">
+    </div>
+</form>
+<br><br>
 <form action="{{ url_for('download_generated_takeout') }}" method="POST">
     <div class="form-group">
     <input type="submit" value="Scarica un takeout generato"
@@ -108,12 +120,6 @@
     </div>
     <input type="submit" value="Carica"
             class="btn btn-danger btn-sm">
-</form>
-<br><br>
-<form action="{{ url_for('logout') }}" method="POST">
-    <div class="form-group">
-        <button type="submit" value="Logout" style="float:right;" class="btn btn-danger" id="logout">Logout</button>
-    </div>
 </form>
 <br><br>
 {% endblock %}

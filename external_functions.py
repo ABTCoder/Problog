@@ -150,9 +150,23 @@ def add_rednode(prob, start, lat, long, finish, place):
         print("Instance already exists")
 
 
-# Elimina tutti i nodi rossi
+#Aggiunge un utente al database
+def add_user(user):
+    db.session.add(user)
+    db.session.commit()
+
+
+# Elimina tutti i nodi verdi
 def clean_green_nodes():
     gnodes = m.Place.query.all()
+    for g in gnodes:
+        db.session.delete(g)
+    db.session.commit()
+
+
+# Elimina tutti i nodi verdi di un utente
+def clean_user_green_nodes(uid):
+    gnodes = m.Place.query.filter_by(id=uid).all()
     for g in gnodes:
         db.session.delete(g)
     db.session.commit()
@@ -167,15 +181,25 @@ def clean_red_nodes():
 
 
 # Rimette tutti gli utenti a negativo
-def reset_users():
+def reset_all_users():
     users = m.User.query.all()
     for u in users:
         u.positive = False
         u.test_date = None
     db.session.commit()
 
+
+# Rimette un utente a negativo
+def reset_user(uid):
+    u = m.User.query.get(uid)
+    u.positive = False
+    u.test_date = None
+    db.session.commit()
+
+
 def rand_loc():
     return random.randrange(-50, 50)
+
 
 def generate_random_takeout():
     random.seed()
@@ -190,8 +214,8 @@ def generate_random_takeout():
         place = random.choice(places)
         elem = {"placeVisit": {
                     "location": {
-                        "latitudeE7": place[1] +rand_loc(),
-                        "longitudeE7": place[2] +rand_loc(),
+                        "latitudeE7": place[1] + rand_loc(),
+                        "longitudeE7": place[2] + rand_loc(),
                         "name": place[0]
                     },
                     "duration": {
