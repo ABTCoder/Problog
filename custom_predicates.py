@@ -20,12 +20,6 @@ def concat_list(arg1, arg2):
     return arg1 + arg2
 
 
-@problog_export('-term')
-def read():
-    x = input()
-    return Constant(int(x));
-
-
 # Calcolo sigmoide con parametri per la traslazione
 def sigmoid(x, x0, a):
     return 1 / (1 + np.exp(-(x-x0)/a))
@@ -48,26 +42,22 @@ def geo_distance(la1, lo1, la2, lo2):
 
     loc1 = (np.double(la1) / 1E7, np.double(lo1)/ 1E7)
     loc2 = (np.double(la2) / 1E7, np.double(lo2) / 1E7)
-    print(la1)
-    print(la2)
-    print(lo1)
-    print(lo2)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
-    print(str(dist) +" loc1: "+ str(loc1)+" loc2: "+ str(loc2))
+    print("{} {} {} {}".format(la1, lo1, la2, lo2))
+    print(str(dist) + " loc1: " + str(loc1) + " loc2: " + str(loc2))
 
     return dist
 
 
 @problog_export('+int','+int','+int','+int','-int','-int')
 def midpoint(la1, lo1, la2, lo2):
-#Input values as degrees
+    # Input values as degrees
 
-#Convert to radians
+    # Convert to radians
     lat1 = math.radians(la1 / 1E7)
     lon1 = math.radians(lo1 / 1E7)
     lat2 = math.radians(la2 / 1E7)
     lon2 = math.radians(lo2 / 1E7)
-
 
     bx = math.cos(lat2) * math.cos(lon2 - lon1)
     by = math.cos(lat2) * math.sin(lon2 - lon1)
