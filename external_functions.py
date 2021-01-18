@@ -85,14 +85,16 @@ def main_parser(id, file):
 
 
 def call_prolog_insert_positive(engine, user_id, date):
-    # p = PrologFile("prolog/main_sanita.pl")
     p = ""
     with codecs.open("prolog/main_sanita.pl", "r", "utf-16") as f:
         for line in f:
             p += line
     p = PrologString(p)
     db = engine.prepare(p)
-    query = Term("insertPositive", Constant(user_id), Constant(date))
+    oldest_match = m.User.query.get(user_id).oldest_risk_date
+    if oldest_match is None:
+        oldest_match = 0
+    query = Term("insertPositive", Constant(user_id), Constant(date), Constant(oldest_match))
     res = engine.query(db, query)
 
 
@@ -103,6 +105,7 @@ def find_all_prob(engine):
         for line in f:
             ps += line
 
+    # Calcolo probabilità tramite problog
     ps += "query(infect(_))."
     p = PrologString(ps)
     db = engine.prepare(p)
@@ -122,11 +125,13 @@ def find_user_prob(id, engine):
         for line in f:
             ps += line
 
+    # Pulizia dei nodi dinamici date/1 all'interno di problog
     p = PrologString(ps)
     dbp = engine.prepare(p)
     query = Term("clean")
     res = engine.query(dbp, query)
 
+    # Calcolo probabilità tramite problog
     ps += "query(infect(" + str(id) + "))."
     p = PrologString(ps)
     dbp = engine.prepare(p)
@@ -136,23 +141,24 @@ def find_user_prob(id, engine):
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
 
-    term = Term("date",None)
+    # Salvataggio nel database SQLite della data più vecchia per cui ha trovato un match
+    term = Term("date", None)
     database = problog_export.database
     node_key = database.find(term)
-    node = database.get_node(node_key)
-    print(node)
-    dates = node.children.find(term.args)
-    vals = []
-    if dates:
-        for date in dates:
-            n = database.get_node(date)
-            print(n.args[0])
-            vals.append(int(n.args[0]))
-    min_val = min(vals)
-    print("min: {}".format(min_val))
-    u = m.User.query.get(id)
-    u.oldest_risk_date = min_val
-    db.session.commit()
+    if node_key is not None:
+        node = database.get_node(node_key)
+        dates = node.children.find(term.args)
+        vals = []
+        if dates:
+            for date in dates:
+                n = database.get_node(date)
+                print(n.args[0])
+                vals.append(int(n.args[0]))
+        min_val = min(vals)
+        print("min: {}".format(min_val))
+        u = m.User.query.get(id)
+        u.oldest_risk_date = min_val
+        db.session.commit()
 
     return r
 
@@ -232,6 +238,7 @@ def reset_all_users():
     for u in users:
         u.positive = False
         u.test_date = None
+        u.oldest_risk_date = None
     db.session.commit()
 
 
@@ -240,6 +247,7 @@ def reset_user(uid):
     u = m.User.query.get(uid)
     u.positive = False
     u.test_date = None
+    u.oldest_risk_date = None
     db.session.commit()
 
 

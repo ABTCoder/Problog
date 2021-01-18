@@ -2,7 +2,7 @@
 :- use_module(library(db)).
 :- use_module(library(assert)).
 :- sqlite_load('app.db').
-:- assertz(dates/1).
+:- assertz(date/1).
 
 Ph::rnode(Ti, Lat, Lon, Tf, Place, Span, Dist, P) :- probability_curve(Span, Dist, P, Ph).
 
