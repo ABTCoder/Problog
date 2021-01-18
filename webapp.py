@@ -80,8 +80,12 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html", username=get_current_username(), prob=get_current_prob(),
-                           positive=ef.is_positive(get_current_user_ID()))
+    pos = ef.is_positive(get_current_user_ID())
+    if pos:
+        prob = 0
+    else:
+        prob = get_current_prob()
+    return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
 
 
 @app.route('/add_health_worker', methods=['POST'])
@@ -212,9 +216,6 @@ def download_generated_takeout():
 def view_users():
     users = ef.get_users()
     return render_template("view_users.html", users=users)
-
-
-
 
 
 def allowed_file(filename):
