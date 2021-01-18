@@ -43,8 +43,8 @@ def geo_distance(la1, lo1, la2, lo2):
     loc1 = (np.double(la1) / 1E7, np.double(lo1)/ 1E7)
     loc2 = (np.double(la2) / 1E7, np.double(lo2) / 1E7)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
-    print("{} {} {} {}".format(la1, lo1, la2, lo2))
-    print(str(dist) + " loc1: " + str(loc1) + " loc2: " + str(loc2))
+    # print("{} {} {} {}".format(la1, lo1, la2, lo2))
+    # print(str(dist) + " loc1: " + str(loc1) + " loc2: " + str(loc2))
 
     return dist
 

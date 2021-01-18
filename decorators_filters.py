@@ -29,6 +29,7 @@ def health_required(func):
     return wrap
 
 
+# Filtro HTML per convertire il tempo da millisecondi a datetime
 @app.template_filter('ctime')
 def timectime(s):
     if s is not None:
@@ -37,6 +38,15 @@ def timectime(s):
     return "N/A"
 
 
+# Filtro HTML per stampare Si o No a seconda della positività
+@app.template_filter('pos_translation')
+def pos_tr(p):
+    if p:
+        return "Si"
+    return "No"
+
+
+# Filtro HTML per stampare la probabilità in percentuale
 @app.template_filter('cut_prob')
 def cut_prob(prob):
     prob *= 100

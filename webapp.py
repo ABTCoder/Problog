@@ -151,6 +151,35 @@ def view_all():
     return render_template("view_all.html", items=items)
 
 
+@app.route('/health_worker', methods=['GET'])
+@login_required
+@health_required
+def health_worker_functions():
+    r = ef.find_all_prob(engine)
+    items = []
+    for key, value in r.items():
+        start = "infect("
+        end = ")"
+        result = str(key)[len(start):-len(end)]
+        u = User.query.get(int(result))
+        items.append((u, value))
+    return render_template("health_worker.html", items=items)
+
+
+@app.route('/warn_user', methods=['POST'])
+@login_required
+@health_required
+def warn_user():
+    uid = request.form["id"]
+    if not ef.is_positive(int(uid)):
+        ef.find_user_prob(int(uid), engine)
+        flash("Email di avviso inviata")
+    else:
+        # Aggiungere in futuro funzione per inviare effettivamente l'email
+        flash("Utente già positivo")
+    return redirect(url_for('health_worker_functions'))
+
+
 @app.route('/view_nodes', methods=['GET'])
 @login_required
 def view_nodes():
@@ -238,7 +267,7 @@ def get_current_username():
 def get_current_prob():
     id = get_current_user_ID()
     r = ef.find_user_prob(id, engine)
-    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchèì è in un formato strano (non stringa)
+    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è in un formato strano (non stringa)
     return r[l[0]]
 
 
