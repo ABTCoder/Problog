@@ -1,7 +1,0 @@
-cf("Tommaso", "CTORFB84D25G597T").
-cf("Lucia", "MFFKHL97E98S654W").
-cf("Marti", "PLSLCA98E63W657T").
-cf("Mia", "WDPRFY64T21Q986C").
-cf("Ale", "SBNALL89T63W546R").
-cf("Eva", "MRGGIA96E96W547T").
-cf("Marco", "POLMRC47R85E452").
