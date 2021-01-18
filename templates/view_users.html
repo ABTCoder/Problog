@@ -10,6 +10,7 @@
                 <th scope="col">Username</th>
                 <th scope="col">Email</th>
                 <th scope="col">Positivo</th>
+                <th scope="col">Data più vecchia</th>
                 <th scope="col">Data tampone</th>
                 <th scoèe="col">Permessi</th>
             </tr>
@@ -22,6 +23,7 @@
                 <td>{{u.username}}</td>
                 <td>{{u.email}}</td>
                 <td>{{u.positive}}</td>
+                <td>{{u.oldest_risk_date | ctime}}</td>
                 <td>{{u.test_date | ctime}}</td>
                 <td>{{u.role}}</td>
             </tr>

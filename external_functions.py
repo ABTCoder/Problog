@@ -1,6 +1,7 @@
 import codecs
 from datetime import datetime
 
+from problog.extern import problog_export
 from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
 from problog.formula import LogicFormula, LogicDAG
@@ -95,19 +96,64 @@ def call_prolog_insert_positive(engine, user_id, date):
     res = engine.query(db, query)
 
 
-def find_user_prob(id, engine):
-    p = ""
+# Trova la probabilità di tutti
+def find_all_prob(engine):
+    ps = ""
     with open("prolog/problog_predicates.pl", "r") as f:
         for line in f:
-            p += line
-        p += "query(infect(" + str(id) + "))."
-    p = PrologString(p)
+            ps += line
+
+    ps += "query(infect(_))."
+    p = PrologString(ps)
     db = engine.prepare(p)
     lf = LogicFormula.create_from(p)  # ground the program
     dag = LogicDAG.create_from(lf)  # break cycles in the ground program
     cnf = CNF.create_from(dag)  # convert to CNF
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
+
+    return r
+
+
+# Trova la probabilità di un singolo individuo
+def find_user_prob(id, engine):
+    ps = ""
+    with open("prolog/problog_predicates.pl", "r") as f:
+        for line in f:
+            ps += line
+
+    p = PrologString(ps)
+    dbp = engine.prepare(p)
+    query = Term("clean")
+    res = engine.query(dbp, query)
+
+    ps += "query(infect(" + str(id) + "))."
+    p = PrologString(ps)
+    dbp = engine.prepare(p)
+    lf = LogicFormula.create_from(p)  # ground the program
+    dag = LogicDAG.create_from(lf)  # break cycles in the ground program
+    cnf = CNF.create_from(dag)  # convert to CNF
+    ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
+    r = ddnnf.evaluate()
+
+    term = Term("date",None)
+    database = problog_export.database
+    node_key = database.find(term)
+    node = database.get_node(node_key)
+    print(node)
+    dates = node.children.find(term.args)
+    vals = []
+    if dates:
+        for date in dates:
+            n = database.get_node(date)
+            print(n.args[0])
+            vals.append(int(n.args[0]))
+    min_val = min(vals)
+    print("min: {}".format(min_val))
+    u = m.User.query.get(id)
+    u.oldest_risk_date = min_val
+    db.session.commit()
+
     return r
 
 

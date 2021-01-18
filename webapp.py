@@ -137,8 +137,7 @@ def view_prob():
 @app.route('/view_all', methods=['GET'])
 @login_required
 def view_all():
-    query = "infect(_)"
-    r = ef.find_user_prob(query, engine)
+    r = ef.find_all_prob(engine)
     items = []
     for key, value in r.items():
         start = "infect("
