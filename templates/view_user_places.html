@@ -1,3 +1,4 @@
+{% from "macros.html" import render_pagination with context %}
 {% extends 'base.html' %}
 
 {% block title %} Contracciami {% endblock %}
@@ -10,22 +11,23 @@
             <th scope="col">Latitudine</th>
             <th scope="col">Longitudine</th>
             <th scope="col">Fine</th>
-            <th scope="col">PlaceId</th>
+            <th scope="col">Nome</th>
             <th scope="col">Al chiuso</th>
         </tr>
     </thead>
     <tbody>
-    {% for place in places %}
+    {% for place in places.items %}
         <tr class="table-success">
             <th scope="row">{{place.id}}</th>
-            <td>{{place.start}}</td>
+            <td>{{place.start | ctime}}</td>
             <td>{{place.lat}}</td>
             <td>{{place.long}}</td>
-            <td>{{place.finish}}</td>
+            <td>{{place.finish | ctime}}</td>
             <td>{{place.placeId}}</td>
-            <td>{{place.indoor | pos_translation}}</td>
+            <td>{{place.indoor| pos_translation}}</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
+{{ render_pagination(places, 'view_user_places') }}
 {% endblock %}

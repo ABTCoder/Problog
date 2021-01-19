@@ -180,6 +180,15 @@ def warn_user():
     return redirect(url_for('health_worker_functions'))
 
 
+@app.route('/view_user_places', methods=['GET'])
+@login_required
+def view_user_places():
+    page = request.args.get('page', 1, type=int)
+    places = ef.get_user_places(page)
+    print("length {}".format(len(places.items)))
+    return render_template("view_user_places.html", places=places)
+
+
 @app.route('/view_nodes', methods=['GET'])
 @login_required
 def view_nodes():

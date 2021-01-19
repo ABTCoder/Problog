@@ -18,12 +18,11 @@ from webapp import db, app
 
 
 def indoor_check(name):
-    cases = ["Piazza", "Via", "Parco"]
+    cases = ["piazza", "via", "parco", "fontana", "laghetti", "parcheggio"]
     for case in cases:
-        if case in name:
+        if case in name.casefold():
             return 0
-        else:
-            return 1
+    return 1
 
 
 def main_parser(id, file):
@@ -129,7 +128,8 @@ def get_places():
 
 # Ottieni i place di un utente con la paginazione
 def get_user_places(page):
-    return m.Place.filter_by(id=current_user.id).paginate(page=page, per_page=app.Config["NODES_PER_PAGE"])
+    print(current_user.get_id())
+    return m.Place.query.filter_by(id=current_user.get_id()).paginate(page=page, per_page=app.config["NODES_PER_PAGE"])
 
 
 # Ottieni tutti i nodi rossi
@@ -157,7 +157,7 @@ def is_positive(id):
 
 # Scrivi nel database un nodo rosso
 def add_rednode(prob, start, lat, long, finish, place):
-    exists = db.session.query(db.exists().where(m.RedNode.start==start and m.RedNode.placeId==place)).scalar()
+    exists = db.session.query(db.exists().where(m.RedNode.start == start and m.RedNode.placeId == place)).scalar()
     if not exists:
         r = m.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
         db.session.add(r)
@@ -166,7 +166,7 @@ def add_rednode(prob, start, lat, long, finish, place):
         print("Instance already exists")
 
 
-#Aggiunge un utente al database
+# Aggiunge un utente al database
 def add_user(user):
     db.session.add(user)
     db.session.commit()
