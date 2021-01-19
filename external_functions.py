@@ -15,73 +15,30 @@ import models as m
 
 from webapp import db
 
+def indoor_check(name):
+    cases = ["Piazza", "Via", "Parco"]
+    for case in cases:
+        if case in name:
+            return 1
+        else:
+            return 0
 
 def main_parser(id, file):
     json_dict = json.load(file)
     for obj in json_dict['timelineObjects']:
-        if 'placeVisit' in obj:
-            # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
-            location = obj['placeVisit']['location']
-            duration = obj['placeVisit']['duration']
-            p = m.Place(id=id,
-                             start=duration["startTimestampMs"],
-                             lat=location["latitudeE7"],
-                             long=location["longitudeE7"],
-                             finish=duration["endTimestampMs"],
-                             placeId=location["name"])
-            db.session.add(p)
-            '''place_string = '\nplace' + \
-                           '(' + \
-                           '"' + \
-                           CF + \
-                           '"' + \
-                           ', ' + \
-                           str(duration["startTimestampMs"]) + \
-                           ', ' + \
-                           str(location["latitudeE7"]) + \
-                           ', ' + \
-                           str(location["longitudeE7"]) + \
-                           ', ' + \
-                           str(duration["endTimestampMs"]) + \
-                           ', ' + \
-                           '"' + \
-                           str(location["name"]).replace('"',"'") + \
-                           '"' + \
-                           ')' + \
-                           '.'
-            nodi_file.write(place_string)'''
-        elif 'activitySegment' in obj:
-            # activity(CF, Lat1, Lon1, Lat2, Lon2, T_start, T_end, Activity).
-            '''startLoc = obj['activitySegment']['startLocation']
-            endLoc = obj['activitySegment']['endLocation']
-            duration = obj['activitySegment']['duration']
-            activity_type = obj['activitySegment']['activityType']
-            place_string = '\nplace' + \
-                           '(' + \
-                           '"' + \
-                           CF + \
-                           '"' + \
-                           ', ' + \
-                           str(startLoc["latitudeE7"]) + \
-                           ', ' + \
-                           str(endLoc["longitudeE7"]) + \
-                           ', ' + \
-                           str(startLoc["latitudeE7"]) + \
-                           ', ' + \
-                           str(endLoc["longitudeE7"]) + \
-                           ', ' + \
-                           str(duration["startTimestampMs"]) + \
-                           ', ' + \
-                           str(duration["endTimestampMs"]) + \
-                           ', ' + \
-                           '"' + \
-                           str(activity_type) + \
-                           '"' + \
-                           ')' + \
-                           '.'
-            nodi_file.write(place_string)
-    nodi_file.write('\n')'''
+        # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
+        location = obj['placeVisit']['location']
+        duration = obj['placeVisit']['duration']
+        p = m.Place(id=id,
+                    start=duration["startTimestampMs"],
+                    lat=location["latitudeE7"],
+                    long=location["longitudeE7"],
+                    finish=duration["endTimestampMs"],
+                    placeId=location["name"],
+                    indoor=indoor_check(location["name"]))
+        db.session.add(p)
     db.session.commit()
+
 
 
 def call_prolog_insert_positive(engine, user_id, date):

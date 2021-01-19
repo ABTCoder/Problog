@@ -18,7 +18,6 @@ class User(UserMixin, db.Model):
     oldest_risk_date = db.Column(db.BigInteger)
     positive = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(128))
-
     role = db.Column(db.String(10), default="user")
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
@@ -42,7 +41,8 @@ class Place(db.Model):
     lat = db.Column(db.BigInteger, index=True)
     long = db.Column(db.BigInteger, index=True)
     finish = db.Column(db.BigInteger, index=True)
-    placeId = db.Column(db.String(100), index=True)
+    placeId = db.Column(db.String(100), index=True) #cambiare nome colonna con 'name'
+    indoor = db.Column(db.Integer, index=True)
 
     def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
         return '<Place {0}, {1}, {2}>'.format(self.id, self.start, self.placeId)
