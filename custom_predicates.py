@@ -28,13 +28,18 @@ def sigmoid(x, x0, a):
 @problog_export('+int', '+float', '+int', '+float', '-float')
 def probability_curve(span, dist, indoor, prob):
     span = float(span/60000)  # Conversione in minuti
-    final = prob * sigmoid(dist, 1, -0.3) * sigmoid(span, 5, 1.5)
+    if indoor:
+        sig_dist = sigmoid(dist, 1, -0.3) # invariata
+        sig_span = sigmoid(span, 5, 1.5)
+    else:
+        sig_dist = sigmoid(dist, 1, -0.3) # invariata
+        sig_span = sigmoid(span, 8, 1.5)
+    final = prob * sig_dist * sig_span
     """
     prob1 = prob * sigmoid(span, 20, 4.5)  # Sigmoide per il tempo di permanenza (minuti)
     prob2 = prob * sigmoid(dist, 4, -1.4)  # Sigmoide per la distanza (metri)
     final = 1 - (1-prob1)*(1-prob2)
     """
-    print(indoor)
     return final
 
 
