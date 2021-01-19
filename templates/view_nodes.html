@@ -2,30 +2,55 @@
 
 {% block title %} Contracciami {% endblock %}
 {% block content %}
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Inizio</th>
-                <th scope="col">Latitudine</th>
-                <th scope="col">Longitudine</th>
-                <th scope="col">Fine</th>
-                <th scope="col">PlaceId</th>
-                <th scope="col">Indoor</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for place in places %}
-            <tr class="table-success">
-                <th scope="row">{{place.id}}</th>
-                <td>{{place.start}}</td>
-                <td>{{place.lat}}</td>
-                <td>{{place.long}}</td>
-                <td>{{place.finish}}</td>
-                <td>{{place.placeId}}</td>
-                <td>{{place.indoor}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Inizio</th>
+            <th scope="col">Latitudine</th>
+            <th scope="col">Longitudine</th>
+            <th scope="col">Fine</th>
+            <th scope="col">PlaceId</th>
+            <th scope="col">Indoor</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for place in places %}
+        <tr class="table-success">
+            <th scope="row">{{place.id}}</th>
+            <td>{{place.start}}</td>
+            <td>{{place.lat}}</td>
+            <td>{{place.long}}</td>
+            <td>{{place.finish}}</td>
+            <td>{{place.placeId}}</td>
+            <td>{{place.indoor}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div>
+  <ul class="pagination">
+    <li class="page-item {% if places.page == 1 %} disabled {% endif %}">
+      <a class="page-link" href="{{ url_for('view_nodes', places.next_num) }}">&laquo;</a>
+    </li>
+    <li class="page-item active">
+      <a class="page-link" href="#">1</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="#">2</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="#">3</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="#">4</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="#">5</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="#">&raquo;</a>
+    </li>
+  </ul>
+</div>
 {% endblock %}

@@ -1,6 +1,7 @@
 import codecs
 from datetime import datetime
 
+from flask_login import current_user
 from problog.extern import problog_export
 from problog.logic import Term, Constant
 from problog.program import PrologString, PrologFile
@@ -13,15 +14,17 @@ import random
 
 import models as m
 
-from webapp import db
+from webapp import db, app
+
 
 def indoor_check(name):
     cases = ["Piazza", "Via", "Parco"]
     for case in cases:
         if case in name:
-            return 1
-        else:
             return 0
+        else:
+            return 1
+
 
 def main_parser(id, file):
     json_dict = json.load(file)
@@ -38,7 +41,6 @@ def main_parser(id, file):
                     indoor=indoor_check(location["name"]))
         db.session.add(p)
     db.session.commit()
-
 
 
 def call_prolog_insert_positive(engine, user_id, date):
@@ -123,6 +125,11 @@ def find_user_prob(id, engine):
 # Ottieni tutti i nodi place
 def get_places():
     return m.Place.query.all()
+
+
+# Ottieni i place di un utente con la paginazione
+def get_user_places(page):
+    return m.Place.filter_by(id=current_user.id).paginate(page=page, per_page=app.Config["NODES_PER_PAGE"])
 
 
 # Ottieni tutti i nodi rossi
