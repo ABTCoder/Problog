@@ -166,6 +166,10 @@ def is_positive(id):
     u = m.User.query.get(id)
     return u.positive
 
+def is_positive(cf):
+    u = m.User.query.get(cf)
+    return u.positive
+
 
 # Scrivi nel database un nodo rosso
 def add_rednode(prob, start, lat, long, finish, place):
