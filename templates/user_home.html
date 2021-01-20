@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %} Contracciami {% endblock %}
+{% block content %}
+<h1></h1>
+<br><br>
+<div class="jumbotron">
+  <h1 class="display-3">Benvenuto {{username|safe}}!</h1>
+  {% if positive %}
+  <div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
+    <div class="card-header">Attenzione</div>
+    <div class="card-body">
+      <h4 class="card-title">Sei già positivo!</h4>
+    </div>
+  </div>
+  {% else %}
+  {% if prob >= 0.85 %}
+  <div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
+    <div class="card-header">Probabilità di contagio</div>
+    <div class="card-body">
+      <h4 class="card-title">Molto alta</h4>
+      <p class="card-text"> {{prob| cut_prob}} </p>
+    </div>
+  </div>
+  {% elif (prob >= 0.6) and (prob < 0.85) %}
+  <div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
+    <div class="card-header">Probabilità di contagio</div>
+    <div class="card-body">
+      <h4 class="card-title">Alta</h4>
+      <p class="card-text"> {{prob| cut_prob}} </p>
+    </div>
+  </div>
+  {% elif (prob >= 0.4) and (prob < 0.6) %}
+  <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+    <div class="card-header">Probabilità di contagio</div>
+    <div class="card-body">
+      <h4 class="card-title">Media</h4>
+      <p class="card-text"> {{prob| cut_prob}} </p>
+    </div>
+  </div>
+  {% else %}
+  <div class="card bg-secondary mb-3" style="max-width: 20rem;">
+    <div class="card-header">Probabilità di contagio</div>
+    <div class="card-body">
+      <h4 class="card-title">Bassa</h4>
+      <p class="card-text"> {{prob| cut_prob}} </p>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <br><br>
+  <h2>Carica un file Google Takeout</h2>
+  <form action="{{ url_for('load_takeout') }}" method="POST" enctype=multipart/form-data>
+      <div class="form-group">
+        <label for="exampleInputFile">Inserisci il file</label>
+        <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" name="file">
+        <small id="fileHelp" class="form-text text-muted">Il file deve essere un Google Takeout in formato Json</small>
+      </div>
+      <input type="submit" value="Carica"
+              class="btn btn-danger btn-sm">
+  </form>
+  <br><br>
+</div>
+
+{% endblock %}

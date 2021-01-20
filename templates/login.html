@@ -2,20 +2,21 @@
 
 {% block title %} Accedi {% endblock %}
 {% block content %}
-<div class="jumbotron" style="text-align: center">
+<div class="jumbotron text-center">
     <h1 class="display-3">Accedi</h1>
+    <hr class="my-4">
     <form action="{{ url_for('login') }}" method="POST" style="width: 30%; margin: auto">
         {{ form.csrf_token }}
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" class="form-control" style="text-align: center" id="username" name="username" placeholder="Username" required>
+            <input type="text" class="form-control text-center"  id="username" name="username" placeholder="Username" required>
         </div>
         {% if username_err %}
         <span style="color: red;">{{ username_err }}</span>
         {% endif %}
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" style="text-align: center" id="password" name="password" placeholder="Password" required>
+            <input type="password" class="form-control text-center" id="password" name="password" placeholder="Password" required>
         </div>
         {% if password_err %}
         <span style="color: red;">{{ password_err }}</span>

@@ -2,31 +2,32 @@
 
 {% block title %} Registrati {% endblock %}
 {% block content %}
-<div class="jumbotron" style="text-align: center">
+<div class="jumbotron text-center">
     <h1 class="display-3">Registrati</h1>
+    <hr class="my-4">
     <form action="{{ url_for('register') }}" method="POST" style="width: 30%; margin: auto">
         {{ form.csrf_token }}
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" class="form-control" style="text-align: center" id="username" name="username" placeholder="Username" required>
+            <input type="text" class="form-control text-center" id="username" name="username" placeholder="Username" required>
             {% for error in form.username.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
             <label for="username">Email</label>
-            <input type="email" class="form-control" style="text-align: center" id="email" name="email" placeholder="Email" required>
+            <input type="email" class="form-control text-center" id="email" name="email" placeholder="Email" required>
             {% for error in form.email.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
         <div class="form-group">
             <label for="cf">Codice fiscale</label>
-            <input type="text" class="form-control" style="text-align: center" id="cf" name="cf" aria-describedby="cfhelp" placeholder="Codice fiscale" maxlength="16">
+            <input type="text" class="form-control text-center" id="cf" name="cf" aria-describedby="cfhelp" placeholder="Codice fiscale" maxlength="16">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" style="text-align: center" id="password" name="password" placeholder="Password" required>
+            <input type="password" class="form-control text-center" id="password" name="password" placeholder="Password" required>
         </div>
         <button type="submit" class="btn btn-primary" name="register" id="register">Registrati</button>
     </form>

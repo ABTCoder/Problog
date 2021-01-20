@@ -3,21 +3,13 @@ from problog.logic import *
 import haversine as hs
 import external_functions as ef
 import numpy as np
+from datetime import datetime
 
 
-@problog_export('+str', '+str', '-str')
-def concat_str(arg1, arg2):
-    return arg1 + arg2
-
-
-@problog_export('+int', '+int', '-int')
-def int_plus(arg1, arg2):
-    return arg1 + arg2
-
-
-@problog_export('+list', '+list', '-list')
-def concat_list(arg1, arg2):
-    return arg1 + arg2
+@problog_export('-int')
+def current_time():
+    date = datetime.now()
+    return date.timestamp()
 
 
 # Calcolo sigmoide con parametri per la traslazione
