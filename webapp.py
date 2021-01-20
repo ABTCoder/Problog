@@ -121,27 +121,20 @@ def admin_functions():
 @app.route('/insert_positive', methods=['POST'])
 @login_required
 def insert_positive():
-    id = request.form['id']
-    if ef.is_positive(id):
-        flash("L'utente è già positivo!")
+    form = forms.InsertPositiveForm()
+    if ef.is_positive(cf=form.cf.data):
+        flash("L'utente già positivo.")
     else:
         date = request.form['date']
         d = date.split('T')
         dt_obj = datetime.strptime(date,
                                    '%Y-%m-%dT%H:%M')
         date_millis = dt_obj.timestamp() * 1000
+        id = get_user_ID(form.cf.data)
         ef.set_user_positive(id, int(date_millis))
         ef.call_prolog_insert_positive(engine, id, int(date_millis))
-    return redirect(url_for('index'))
-
-
-@app.route('/view', methods=['POST'])
-@login_required
-def view_prob():
-    id = request.form['id']
-    r = ef.find_user_prob(id, engine)
-    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è in un formato strano (non stringa)
-    return render_template("view_prob.html", id=id, prob=r[l[0]])
+        flash("Positività registrata correttamente.")
+    return redirect(url_for('insert_positive'))
 
 
 @app.route('/view_all', methods=['GET'])
@@ -257,6 +250,9 @@ def get_current_user_ID():
     user = load_user(internal_id)
     return user.id
 
+def get_user_ID(cf):
+    user = User.query.filter_by(cf=cf).first()
+    return user.id
 
 def get_current_username():
     internal_id = current_user.get_id()
