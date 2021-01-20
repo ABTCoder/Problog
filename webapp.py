@@ -90,7 +90,7 @@ def index():
         return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
     if current_user.role == "health":
         items = ef.get_all_prob_list(engine)
-        return render_template("health_worker.html", username=get_current_username(), items=items)
+        return render_template("insert_positive.html", username=get_current_username(), items=items)
     return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
 
 
@@ -120,21 +120,27 @@ def admin_functions():
 
 @app.route('/insert_positive', methods=['POST'])
 @login_required
+@health_required
 def insert_positive():
     form = forms.InsertPositiveForm()
-    if ef.is_positive(cf=form.cf.data):
-        flash("L'utente già positivo.")
-    else:
-        date = request.form['date']
-        d = date.split('T')
-        dt_obj = datetime.strptime(date,
-                                   '%Y-%m-%dT%H:%M')
-        date_millis = dt_obj.timestamp() * 1000
-        id = get_user_ID(form.cf.data)
-        ef.set_user_positive(id, int(date_millis))
-        ef.call_prolog_insert_positive(engine, id, int(date_millis))
-        flash("Positività registrata correttamente.")
-    return redirect(url_for('insert_positive'))
+    print(0)
+    if form.validate_on_submit():
+        print(1)
+        if ef.is_positive_through_cf(form.cf.data):
+            flash("L'utente già positivo.")
+        else:
+            print('else')
+            date = form.date.data
+            dt_obj = datetime.strptime(date,
+                                       '%Y-%m-%dT%H:%M')
+            date_millis = dt_obj.timestamp() * 1000
+            id = get_user_ID(form.cf.data)
+            ef.set_user_positive(id, int(date_millis))
+            ef.call_prolog_insert_positive(engine, id, int(date_millis))
+            flash("Positività registrata correttamente.")
+    return render_template("insert_positive.html", form=form)
+
+
 
 
 @app.route('/view_all', methods=['GET'])

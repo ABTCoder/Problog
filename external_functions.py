@@ -166,8 +166,9 @@ def is_positive(id):
     u = m.User.query.get(id)
     return u.positive
 
-def is_positive(cf):
-    u = m.User.query.get(cf)
+
+def is_positive_through_cf(cf):
+    u = m.User.query.filter_by(cf=cf).first()
     return u.positive
 
 

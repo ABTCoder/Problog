@@ -47,9 +47,18 @@ class InsertPositiveForm(FlaskForm):
         if user is None:
             raise ValidationError("Codice fiscale non esistente. Utente non registrato")
 
-    '''def validate_date(self, date):
-        d = date.split('T')
-        dt_obj = datetime.strptime(date,
-                                   '%Y-%m-%dT%H:%M')
-        if date is None:
-            raise ValidationError("Non è possibile inserire una data futura.")'''
+    def validate_date(self, date):
+        insert_date = datetime.strptime(date.data,
+                                        '%Y-%m-%dT%H:%M')
+        if insert_date >= datetime.now():
+            raise ValidationError("Non è possibile inserire una data futura.")
+
+class HealthWorkerRegistration(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Username utilizzato. Riprova')
