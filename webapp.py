@@ -85,6 +85,12 @@ def index():
         prob = 0
     else:
         prob = get_current_prob()
+
+    if current_user.role == "admin":
+        return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
+    if current_user.role == "health":
+        items = ef.get_all_prob_list(engine)
+        return render_template("health_worker.html", username=get_current_username(), items=items)
     return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
 
 
@@ -149,21 +155,6 @@ def view_all():
         result = str(key)[len(start):-len(end)]
         items.append((result, value))
     return render_template("view_all.html", items=items)
-
-
-@app.route('/health_worker', methods=['GET'])
-@login_required
-@health_required
-def health_worker_functions():
-    r = ef.find_all_prob(engine)
-    items = []
-    for key, value in r.items():
-        start = "infect("
-        end = ")"
-        result = str(key)[len(start):-len(end)]
-        u = User.query.get(int(result))
-        items.append((u, value))
-    return render_template("health_worker.html", items=items)
 
 
 @app.route('/warn_user', methods=['POST'])

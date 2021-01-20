@@ -121,6 +121,18 @@ def find_user_prob(id, engine):
     return r
 
 
+def get_all_prob_list(engine):
+    r = find_all_prob(engine)
+    items = []
+    for key, value in r.items():
+        start = "infect("
+        end = ")"
+        result = str(key)[len(start):-len(end)]
+        u = m.User.query.get(int(result))
+        items.append((u, value))
+    return items
+
+
 # Ottieni tutti i nodi place
 def get_places():
     return m.Place.query.all()
