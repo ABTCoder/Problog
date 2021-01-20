@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from datetime import datetime
 
 from models import User
 
@@ -14,7 +15,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
-    cf = StringField('cf')
+    cf = StringField('cf',validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('password', validators=[DataRequired()])
     submit = SubmitField('register')
@@ -24,17 +25,31 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            print('Username utilizzato')
             raise ValidationError('Username utilizzato. Riprova')
+
+    def validate_cf(self, cf):
+        user = User.query.filter_by(cf=cf.data).first()
+        if user is not None or len(cf)!=16:
+            raise ValidationError('Codice fiscale errato. Riprova')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Email già utilizzata. Riprova')
 
-    '''def validate_cf(self, cf):
-        cf = User.query.filter_by(cf=cf.data).first()
-        if cf is not None:
-            raise ValidationError('Codice fiscale precedentemente inserito. Controlla e riprova!')'''
+class InsertPositiveForm(FlaskForm):
+    cf = StringField('cf',validators=[DataRequired()])
+    date = StringField('date', validators=[DataRequired()])
+    submit = SubmitField('insert')
 
+    def validate_cf(self, cf):
+        user = User.query.filter_by(cf=cf.data).first()
+        if user is None:
+            raise ValidationError("Codice fiscale non esistente. Utente non registrato")
 
+    '''def validate_date(self, date):
+        d = date.split('T')
+        dt_obj = datetime.strptime(date,
+                                   '%Y-%m-%dT%H:%M')
+        if date is None:
+            raise ValidationError("Non è possibile inserire una data futura.")'''
