@@ -29,6 +29,17 @@ def health_required(func):
     return wrap
 
 
+def user_required(func):
+    @wraps(func)
+    def wrap(*args, **kwargs):
+        if current_user.role == "user":
+            return func(*args, **kwargs)
+        else:
+            flash("Non hai i permessi per accedere a questa pagina")
+            return redirect(url_for('index'))
+
+    return wrap
+
 # Filtro HTML per convertire il tempo da millisecondi a datetime
 @app.template_filter('ctime')
 def timectime(s):

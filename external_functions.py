@@ -124,12 +124,13 @@ def find_user_prob(id, engine):
 def get_all_prob_list(engine):
     r = find_all_prob(engine)
     items = []
-    for key, value in r.items():
-        start = "infect("
-        end = ")"
-        result = str(key)[len(start):-len(end)]
-        u = m.User.query.get(int(result))
-        items.append((u, value))
+    if len(m.RedNode.query.all()) > 0:
+        for key, value in r.items():
+            start = "infect("
+            end = ")"
+            result = str(key)[len(start):-len(end)]
+            u = m.User.query.get(int(result))
+            items.append((u, value))
     return items
 
 

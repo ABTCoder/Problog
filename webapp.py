@@ -31,7 +31,7 @@ import external_functions as ef
 
 import forms
 
-from decorators_filters import admin_required, health_required, cut_prob, timectime
+from decorators_filters import admin_required, health_required, user_required, cut_prob, timectime
 
 engine = DefaultEngine()
 
@@ -44,7 +44,7 @@ def register():
     # validate_on_submit() method is going to return False in case the function skips the if
     # statement and goes directly to render the template in the last line of the function
     if request.method == "POST" and form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, cf=form.cf.data)
         user.set_password(form.password.data)
         ef.add_user(user)  # external function for db population
         flash('Congratulazioni, hai un account!')
@@ -80,7 +80,8 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    pos = ef.is_positive(get_current_user_ID())
+    form = forms.InsertPositiveForm()
+    pos = current_user.positive
     if pos:
         prob = 0
     else:
@@ -90,8 +91,8 @@ def index():
         return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
     if current_user.role == "health":
         items = ef.get_all_prob_list(engine)
-        return render_template("insert_positive.html", username=get_current_username(), items=items)
-    return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
+        return render_template("insert_positive.html", username=get_current_username(), items=items, form=form)
+    return render_template("user_home.html", username=get_current_username(), prob=prob, positive=pos)
 
 
 @app.route('/add_health_worker', methods=['POST'])
@@ -138,22 +139,8 @@ def insert_positive():
             ef.set_user_positive(id, int(date_millis))
             ef.call_prolog_insert_positive(engine, id, int(date_millis))
             flash("Positività registrata correttamente.")
-    return render_template("insert_positive.html", form=form)
-
-
-
-
-@app.route('/view_all', methods=['GET'])
-@login_required
-def view_all():
-    r = ef.find_all_prob(engine)
-    items = []
-    for key, value in r.items():
-        start = "infect("
-        end = ")"
-        result = str(key)[len(start):-len(end)]
-        items.append((result, value))
-    return render_template("view_all.html", items=items)
+    items = ef.get_all_prob_list(engine)
+    return render_template("insert_positive.html", form=form, items=items)
 
 
 @app.route('/warn_user', methods=['POST'])
@@ -167,11 +154,12 @@ def warn_user():
     else:
         # Aggiungere in futuro funzione per inviare effettivamente l'email
         flash("Utente già positivo")
-    return redirect(url_for('health_worker_functions'))
+    return redirect(url_for('index'))
 
 
 @app.route('/view_user_places', methods=['GET'])
 @login_required
+@user_required
 def view_user_places():
     page = request.args.get('page', 1, type=int)
     places = ef.get_user_places(page)
@@ -181,6 +169,7 @@ def view_user_places():
 
 @app.route('/view_nodes', methods=['GET'])
 @login_required
+@admin_required
 def view_nodes():
     places = ef.get_places()
     return render_template("view_nodes.html", places=places)
@@ -188,6 +177,7 @@ def view_nodes():
 
 @app.route('/view_red_nodes', methods=['GET'])
 @login_required
+@admin_required
 def view_red_nodes():
     rnodes = ef.get_red_nodes()
     return render_template("view_rnodes.html", red_nodes=rnodes)
@@ -195,6 +185,7 @@ def view_red_nodes():
 
 @app.route('/clean_green_nodes', methods=['POST'])
 @login_required
+@admin_required
 def clean_green_nodes():
     ef.clean_green_nodes()
     return redirect(url_for('index'))
@@ -202,6 +193,7 @@ def clean_green_nodes():
 
 @app.route('/clean_user_green_nodes', methods=['POST'])
 @login_required
+@admin_required
 def clean_user_green_nodes():
     ef.clean_user_green_nodes(get_current_user_ID())
     return redirect(url_for('index'))
@@ -209,6 +201,7 @@ def clean_user_green_nodes():
 
 @app.route('/clean_red_nodes', methods=['POST'])
 @login_required
+@admin_required
 def clean_red_nodes():
     ef.clean_red_nodes()
     return redirect(url_for('index'))
@@ -216,6 +209,7 @@ def clean_red_nodes():
 
 @app.route('/reset_all_users', methods=['POST'])
 @login_required
+@admin_required
 def reset_all_users():
     ef.reset_all_users()
     return redirect(url_for('index'))
@@ -223,6 +217,7 @@ def reset_all_users():
 
 @app.route('/reset_user', methods=['POST'])
 @login_required
+@admin_required
 def reset_user():
     ef.reset_user(get_current_user_ID())
     return redirect(url_for('index'))
@@ -230,6 +225,7 @@ def reset_user():
 
 @app.route("/download_json", methods=['POST'])
 @login_required
+@admin_required
 def download_generated_takeout():
     json_string = ef.generate_random_takeout()
     return Response(
@@ -241,6 +237,7 @@ def download_generated_takeout():
 
 @app.route('/view_users', methods=['GET'])
 @login_required
+@admin_required
 def view_users():
     users = ef.get_users()
     return render_template("view_users.html", users=users)

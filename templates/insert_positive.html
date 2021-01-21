@@ -8,7 +8,7 @@
     {{ form.csrf_token }}
     <div class="form-group">
         <label class="col-form-label col-form-label-lg" for="cf">Inserire il codice fiscale dell'utente:</label>
-        <input class="form-control form-control-lg" type="text" placeholder="codice fiscale" id="cf" name="cf">
+        <input maxlength="16" class="form-control form-control-lg" type="text" placeholder="codice fiscale" id="cf" name="cf">
         {% for error in form.cf.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
@@ -21,9 +21,7 @@
     </div>
     <button type="submit" name="insert" id="insert" class="btn btn-danger btn-sm">Inserisci</button>
 </form>
-{% endblock %}
-
-<!--
+<br><br>
 <h1>Probabilità di infezione degli utenti</h1>
     <table class="table table-hover">
         <thead>
@@ -63,4 +61,7 @@
             {% endfor %}
         </tbody>
     </table>
--->
+{% endblock %}
+
+
+

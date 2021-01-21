@@ -29,7 +29,7 @@ class RegistrationForm(FlaskForm):
 
     def validate_cf(self, cf):
         user = User.query.filter_by(cf=cf.data).first()
-        if user is not None or len(cf)!=16:
+        if user is not None or len(cf.data)!=16:
             raise ValidationError('Codice fiscale errato. Riprova')
 
     def validate_email(self, email):
