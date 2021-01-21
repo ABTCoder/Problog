@@ -88,7 +88,7 @@ def index():
         prob = get_current_prob()
 
     if current_user.role == "admin":
-        return render_template("index.html", username=get_current_username(), prob=prob, positive=pos)
+        return render_template("admin_home.html", username=get_current_username(), prob=prob, positive=pos, form=form)
     if current_user.role == "health":
         items = ef.get_all_prob_list(engine)
         return render_template("insert_positive.html", username=get_current_username(), items=items, form=form)
@@ -99,7 +99,7 @@ def index():
 @login_required
 @admin_required
 def add_health_worker():
-    form = forms.RegistrationForm()
+    form = forms.HealthWorkerRegistrationForm()
     # validate_on_submit() method is going to return False in case the function skips the if
     # statement and goes directly to render the template in the last line of the function
     if form.validate_on_submit():
@@ -107,16 +107,7 @@ def add_health_worker():
         user.set_password(form.password.data)
         ef.add_user(user)  # external function for db population
         flash("Hai aggiunto l'account sanitario: " + user.username)
-        return redirect(url_for('admin_functions'))
-    return render_template("admin.html", form=form)
-
-
-@app.route('/admin_functions')
-@login_required
-@admin_required
-def admin_functions():
-    form = forms.RegistrationForm()
-    return render_template("admin.html", form=form)
+    return render_template("admin_home.html", form=form)
 
 
 @app.route('/insert_positive', methods=['POST'])
@@ -195,8 +186,15 @@ def clean_green_nodes():
 @login_required
 @admin_required
 def clean_user_green_nodes():
-    ef.clean_user_green_nodes(get_current_user_ID())
-    return redirect(url_for('index'))
+    user_id =request.form["id"]
+    if User.query.get(user_id) is not None:
+        ef.clean_user_green_nodes(user_id)
+        flash("Nodi verdi eliminati correttamente.")
+        return redirect(url_for('index'))
+    else:
+        flash("ID utente inserito non esitente.")
+        return redirect(url_for('index'))
+
 
 
 @app.route('/clean_red_nodes', methods=['POST'])
@@ -207,19 +205,38 @@ def clean_red_nodes():
     return redirect(url_for('index'))
 
 
+@app.route('/reset_user', methods=['POST'])
+@login_required
+@admin_required
+def clean_user():
+    user_id = request.form["id"]
+    if User.query.get(user_id) is not None:
+        ef.reset_user(user_id)
+        flash("Utente resettato correttamente.")
+        return redirect(url_for('index'))
+    else:
+        flash("ID utente inserito non esitente.")
+        return redirect(url_for('index'))
+
+
+@app.route('/clean_user', methods=['POST'])
+@login_required
+@admin_required
+def reset_user():
+    user_id = request.form["id"]
+    if User.query.get(user_id) is not None:
+        ef.reset_user(user_id)
+        flash("Utente eliminato correttamente.")
+        return redirect(url_for('index'))
+    else:
+        flash("ID utente inserito non esitente.")
+        return
+
 @app.route('/reset_all_users', methods=['POST'])
 @login_required
 @admin_required
 def reset_all_users():
     ef.reset_all_users()
-    return redirect(url_for('index'))
-
-
-@app.route('/reset_user', methods=['POST'])
-@login_required
-@admin_required
-def reset_user():
-    ef.reset_user(get_current_user_ID())
     return redirect(url_for('index'))
 
 

@@ -53,8 +53,8 @@ class InsertPositiveForm(FlaskForm):
         if insert_date >= datetime.now():
             raise ValidationError("Non è possibile inserire una data futura.")
 
-class HealthWorkerRegistration(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
+class HealthWorkerRegistrationForm(FlaskForm):
+    id = StringField('username', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
 

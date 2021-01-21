@@ -73,10 +73,13 @@
 </form>
 <form action="{{ url_for('clean_user_green_nodes') }}" method="POST">
     <div class="form-group">
-    <input type="submit" value="Elimina nodi verdi di {{current_user.username}}"
-            class="btn btn-success btn-sm">
+        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente di cui elimnare i nodi verdi:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <input type="submit" value="Elimina"
+                class="btn btn-primary btn-sm">
     </div>
 </form>
+<br><br>
 <form action="{{ url_for('clean_red_nodes') }}" method="POST">
     <div class="form-group">
     <input type="submit" value="Elimina nodi rossi"
@@ -85,13 +88,24 @@
 </form>
 <form action="{{ url_for('reset_all_users') }}" method="POST">
     <div class="form-group">
-    <input type="submit" value="Reset degli utenti"
+    <input type="submit" value="Reset utenti"
             class="btn btn-primary btn-sm">
     </div>
 </form>
 <form action="{{ url_for('reset_user') }}" method="POST">
     <div class="form-group">
-    <input type="submit" value="Reset di {{current_user.username}}"
+        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente da resettare:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <input type="submit" value="Reset"
+            class="btn btn-primary btn-sm">
+    </div>
+</form>
+<br><br>
+<form action="{{ url_for('clean_user') }}" method="POST">
+    <div class="form-group">
+        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente da eliminare:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <input type="submit" value="Elimina"
             class="btn btn-primary btn-sm">
     </div>
 </form>
