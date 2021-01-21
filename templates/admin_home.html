@@ -4,52 +4,7 @@
 {% block content %}
 
 <h1>Benvenuto {{username|safe}}!</h1>
-<br><br>
-{% if positive %}
-<div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
-  <div class="card-header">Attenzione</div>
-  <div class="card-body">
-    <h4 class="card-title">Sei già positivo!</h4>
-  </div>
-</div>
-{% else %}
-{% if prob >= 0.85 %}
-<div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
-  <div class="card-header">Probabilità di contagio</div>
-  <div class="card-body">
-    <h4 class="card-title">Molto alta</h4>
-    <p class="card-text"> {{prob| cut_prob}} </p>
-  </div>
-</div>
-{% elif (prob >= 0.6) and (prob < 0.85) %}
-<div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
-  <div class="card-header">Probabilità di contagio</div>
-  <div class="card-body">
-    <h4 class="card-title">Alta</h4>
-    <p class="card-text"> {{prob| cut_prob}} </p>
-  </div>
-</div>
-{% elif (prob >= 0.4) and (prob < 0.6) %}
-<div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-  <div class="card-header">Probabilità di contagio</div>
-  <div class="card-body">
-    <h4 class="card-title">Media</h4>
-    <p class="card-text"> {{prob| cut_prob}} </p>
-  </div>
-</div>
-{% else %}
-<div class="card bg-secondary mb-3" style="max-width: 20rem;">
-  <div class="card-header">Probabilità di contagio</div>
-  <div class="card-body">
-    <h4 class="card-title">Bassa</h4>
-    <p class="card-text"> {{prob| cut_prob}} </p>
-  </div>
-</div>
-{% endif %}
-{% endif %}
-
-<br><br>
-
+<br>
 <form action="{{ url_for('insert_positive') }}" method="POST">
     <div class="form-group">
         <label class="col-form-label col-form-label-lg" for="id_pos">Id dell'utente</label>
@@ -73,8 +28,8 @@
 </form>
 <form action="{{ url_for('clean_user_green_nodes') }}" method="POST">
     <div class="form-group">
-        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente di cui elimnare i nodi verdi:</label>
-        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <label class="col-form-label col-form-label-lg" for="id_cl_all">Inserire ID dell'utente di cui elimnare i nodi verdi:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_cl_all" name="id">
         <input type="submit" value="Elimina"
                 class="btn btn-primary btn-sm">
     </div>
@@ -94,8 +49,8 @@
 </form>
 <form action="{{ url_for('reset_user') }}" method="POST">
     <div class="form-group">
-        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente da resettare:</label>
-        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <label class="col-form-label col-form-label-lg" for="id_res">Inserire ID dell'utente da resettare:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_res" name="id">
         <input type="submit" value="Reset"
             class="btn btn-primary btn-sm">
     </div>
@@ -103,8 +58,8 @@
 <br><br>
 <form action="{{ url_for('clean_user') }}" method="POST">
     <div class="form-group">
-        <label class="col-form-label col-form-label-lg" for="id_pos">Inserire ID dell'utente da eliminare:</label>
-        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_pos" name="id">
+        <label class="col-form-label col-form-label-lg" for="id_cl">Inserire ID dell'utente da eliminare:</label>
+        <input class="form-control form-control-lg" type="text" placeholder="ID" id="id_cl" name="id">
         <input type="submit" value="Elimina"
             class="btn btn-primary btn-sm">
     </div>

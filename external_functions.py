@@ -12,6 +12,8 @@ from problog.ddnnf_formula import DDNNF
 import json
 import random
 
+from config import engine
+
 import models as m
 
 from webapp import db, app
@@ -42,7 +44,7 @@ def main_parser(id, file):
     db.session.commit()
 
 
-def call_prolog_insert_positive(engine, user_id, date):
+def call_prolog_insert_positive(user_id, date):
     p = ""
     with codecs.open("prolog/main_sanita.pl", "r", "utf-16") as f:
         for line in f:
@@ -57,7 +59,7 @@ def call_prolog_insert_positive(engine, user_id, date):
 
 
 # Trova la probabilità di tutti
-def find_all_prob(engine):
+def find_all_prob():
     ps = ""
     with open("prolog/problog_predicates.pl", "r") as f:
         for line in f:
@@ -73,11 +75,19 @@ def find_all_prob(engine):
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
 
-    return r
+    items = []
+    if len(m.RedNode.query.all()) > 0:
+        for key, value in r.items():
+            start = "infect("
+            end = ")"
+            result = str(key)[len(start):-len(end)]
+            u = m.User.query.get(int(result))
+            items.append((u, value))
+    return items
 
 
 # Trova la probabilità di un singolo individuo
-def find_user_prob(id, engine):
+def find_user_prob(id):
     ps = ""
     with open("prolog/problog_predicates.pl", "r") as f:
         for line in f:
@@ -119,19 +129,6 @@ def find_user_prob(id, engine):
         db.session.commit()
 
     return r
-
-
-def get_all_prob_list(engine):
-    r = find_all_prob(engine)
-    items = []
-    if len(m.RedNode.query.all()) > 0:
-        for key, value in r.items():
-            start = "infect("
-            end = ")"
-            result = str(key)[len(start):-len(end)]
-            u = m.User.query.get(int(result))
-            items.append((u, value))
-    return items
 
 
 # Ottieni tutti i nodi place
@@ -231,6 +228,30 @@ def reset_user(uid):
     u.test_date = None
     u.oldest_risk_date = None
     db.session.commit()
+
+
+def get_current_user_ID():
+    internal_id = current_user.get_id()
+    user = m.load_user(internal_id)
+    return user.id
+
+
+def get_user_ID(cf):
+    user = m.User.query.filter_by(cf=cf).first()
+    return user.id
+
+
+def get_current_username():
+    internal_id = current_user.get_id()
+    user = m.load_user(internal_id)
+    return user.username
+
+
+def get_current_prob():
+    id = get_current_user_ID()
+    r = find_user_prob(id)
+    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è in un formato strano (non stringa)
+    return r[l[0]]
 
 
 def rand_loc():

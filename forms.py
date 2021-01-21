@@ -37,6 +37,7 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Email già utilizzata. Riprova')
 
+
 class InsertPositiveForm(FlaskForm):
     cf = StringField('cf',validators=[DataRequired()])
     date = StringField('date', validators=[DataRequired()])
@@ -53,8 +54,9 @@ class InsertPositiveForm(FlaskForm):
         if insert_date >= datetime.now():
             raise ValidationError("Non è possibile inserire una data futura.")
 
+
 class HealthWorkerRegistrationForm(FlaskForm):
-    id = StringField('username', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
 
