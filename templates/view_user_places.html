@@ -3,10 +3,11 @@
 
 {% block title %} Contracciami {% endblock %}
 {% block content %}
-<table class="table table-hover">
+<div class="jumbotron">
+  <h1>Luoghi visitati</h1>
+  <table class="table table-hover">
     <thead>
         <tr>
-            <th scope="col">ID</th>
             <th scope="col">Inizio</th>
             <th scope="col">Latitudine</th>
             <th scope="col">Longitudine</th>
@@ -18,10 +19,9 @@
     <tbody>
     {% for place in places.items %}
         <tr class="table-success">
-            <th scope="row">{{place.id}}</th>
             <td>{{place.start | ctime}}</td>
-            <td>{{place.lat}}</td>
-            <td>{{place.long}}</td>
+            <td>{{place.lat | coord}}°</td>
+            <td>{{place.long | coord}}°</td>
             <td>{{place.finish | ctime}}</td>
             <td>{{place.placeId}}</td>
             <td>{{place.indoor| pos_translation}}</td>
@@ -30,4 +30,5 @@
     </tbody>
 </table>
 {{ render_pagination(places, 'view_user_places') }}
+</div>
 {% endblock %}

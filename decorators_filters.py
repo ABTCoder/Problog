@@ -4,6 +4,7 @@ from flask import flash, redirect, url_for
 from flask_login import current_user
 from datetime import datetime
 from webapp import app
+import numpy as np
 
 
 # Decoratori (annotazione) per definire i permessi per accedere ad una pagina
@@ -62,3 +63,10 @@ def pos_tr(p):
 def cut_prob(prob):
     prob *= 100
     return "{:.2f} %".format(prob)
+
+
+# Filtro HTML per convertire le coordinate
+@app.template_filter('coord')
+def cut_prob(coord):
+    coord = np.double(coord) / 1E7
+    return coord

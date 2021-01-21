@@ -9,7 +9,7 @@ from datetime import datetime
 @problog_export('-int')
 def current_time():
     date = datetime.now()
-    return date.timestamp()
+    return int(date.timestamp())
 
 
 # Calcolo sigmoide con parametri per la traslazione
