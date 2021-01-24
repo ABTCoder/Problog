@@ -72,28 +72,28 @@ def clean_red_nodes():
     return redirect(url_for('index'))
 
 
-@app.route('/reset_user', methods=['POST'])
+@app.route('/delete_user', methods=['POST'])
 @login_required
 @admin_required
-def clean_user():
+def delete_user():
     user_id = request.form["id"]
     if User.query.get(user_id) is not None:
-        ef.reset_user(user_id)
-        flash("Utente resettato correttamente.")
+        ef.delete_user(user_id)
+        flash("Utente eliminato correttamente.")
         return redirect(url_for('index'))
     else:
         flash("ID utente inserito non esitente.")
         return redirect(url_for('index'))
 
 
-@app.route('/clean_user', methods=['POST'])
+@app.route('/reset_user', methods=['POST'])
 @login_required
 @admin_required
 def reset_user():
     user_id = request.form["id"]
     if User.query.get(user_id) is not None:
         ef.reset_user(user_id)
-        flash("Utente eliminato correttamente.")
+        flash("Utente resettato correttamente.")
         return redirect(url_for('index'))
     else:
         flash("ID utente inserito non esitente.")

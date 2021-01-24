@@ -72,7 +72,7 @@ def midpoint(la1, lo1, la2, lo2):
 @problog_export_nondet('+float','+int','+int','+int','+int','+str')
 def add_rednode(prob, start, lat, long, finish, place):
     place = place[1:-1]
-    print("{} {} {} {} {} {}".format(prob, start, lat, long, finish, place))
+    # print("{} {} {} {} {} {}".format(prob, start, lat, long, finish, place))
     ef.add_rednode(prob, start, lat, long, finish, place)
     return [()]
 
