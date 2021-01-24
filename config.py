@@ -12,4 +12,4 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     NODES_PER_PAGE = 15
-    ALLOWED_EXTENSIONS = {'json'}
+    ALLOWED_EXTENSIONS = {'.json'}

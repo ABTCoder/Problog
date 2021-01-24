@@ -1,3 +1,4 @@
+import os
 from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_required
 
@@ -18,8 +19,7 @@ def view_user_places():
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
+    return os.path.splitext(filename)[-1] in app.config["ALLOWED_EXTENSIONS"]
 
 
 @app.route('/load_takeout', methods=['POST'])
@@ -27,7 +27,7 @@ def allowed_file(filename):
 def load_takeout():
     if 'file' not in request.files:
         flash('No file part')
-        return redirect(request.url)
+        return redirect(url_for("index"))
     file = request.files['file']
     # if user does not select file, browser also
     # submit an empty part without filename
@@ -36,6 +36,11 @@ def load_takeout():
         return redirect(request.url)
     if file and allowed_file(file.filename):
         current_user_id = ef.get_current_user_ID()
-        ef.main_parser(current_user_id, file)
-        flash("Il takeout è stato caricato correttamente!")
+        if ef.main_parser(current_user_id, file):
+            flash("Il takeout è stato caricato correttamente.")
+        else:
+            flash("Il takeout risulta corrotto o non conforme.")
+        return redirect(url_for("index"))
+    else:
+        flash("L'estensione del file non risulta di tipo json.")
         return redirect(url_for("index"))

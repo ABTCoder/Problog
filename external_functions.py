@@ -28,20 +28,24 @@ def indoor_check(name):
 
 
 def main_parser(id, file):
-    json_dict = json.load(file)
-    for obj in json_dict['timelineObjects']:
-        # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
-        location = obj['placeVisit']['location']
-        duration = obj['placeVisit']['duration']
-        p = Place(id=id,
-                    start=duration["startTimestampMs"],
-                    lat=location["latitudeE7"],
-                    long=location["longitudeE7"],
-                    finish=duration["endTimestampMs"],
-                    placeId=location["name"],
-                    indoor=indoor_check(location["name"]))
-        db.session.add(p)
-    db.session.commit()
+    try:
+        json_dict = json.load(file)
+        for obj in json_dict['timelineObjects']:
+            # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
+            location = obj['placeVisit']['location']
+            duration = obj['placeVisit']['duration']
+            p = Place(id=id,
+                        start=duration["startTimestampMs"],
+                        lat=location["latitudeE7"],
+                        long=location["longitudeE7"],
+                        finish=duration["endTimestampMs"],
+                        placeId=location["name"],
+                        indoor=indoor_check(location["name"]))
+            db.session.add(p)
+        db.session.commit()
+    except:
+        return False
+    return True
 
 
 def call_prolog_insert_positive(user_id, date):
