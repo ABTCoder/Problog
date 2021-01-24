@@ -34,14 +34,16 @@ def main_parser(id, file):
             # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
             location = obj['placeVisit']['location']
             duration = obj['placeVisit']['duration']
-            p = Place(id=id,
-                        start=duration["startTimestampMs"],
-                        lat=location["latitudeE7"],
-                        long=location["longitudeE7"],
-                        finish=duration["endTimestampMs"],
-                        placeId=location["name"],
-                        indoor=indoor_check(location["name"]))
-            db.session.add(p)
+            prev = datetime.now().timestamp() - 2592000
+            if int(duration["endTimestampMs"]) / 1000 > prev:
+                p = Place(id=id,
+                            start=duration["startTimestampMs"],
+                            lat=location["latitudeE7"],
+                            long=location["longitudeE7"],
+                            finish=duration["endTimestampMs"],
+                            placeId=location["name"],
+                            indoor=indoor_check(location["name"]))
+                db.session.add(p)
         db.session.commit()
     except:
         return False
@@ -186,8 +188,7 @@ def add_rednode(prob, start, lat, long, finish, place):
 
 
 # Aggiunge un utente al database
-def add_user(user_id):
-    user = User.query.get(int(user_id))
+def add_user(user):
     db.session.add(user)
     db.session.commit()
 
