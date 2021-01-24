@@ -12,7 +12,7 @@ from problog.ddnnf_formula import DDNNF
 import json
 import random
 
-from config import engine
+'from config import engine
 
 import models as m
 
@@ -184,6 +184,11 @@ def add_rednode(prob, start, lat, long, finish, place):
 # Aggiunge un utente al database
 def add_user(user):
     db.session.add(user)
+    db.session.commit()
+
+# Elimina un utente nell database
+def delete_user(user):
+    db.session.delete(user)
     db.session.commit()
 
 
