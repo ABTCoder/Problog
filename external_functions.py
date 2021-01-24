@@ -12,9 +12,9 @@ from problog.ddnnf_formula import DDNNF
 import json
 import random
 
-'from config import engine
+from config import engine
 
-import models as m
+from models import *
 
 from webapp import db, app
 
@@ -33,7 +33,7 @@ def main_parser(id, file):
         # place(CF, Ti(integer), Lat, Long, Tf(integer), placeId).
         location = obj['placeVisit']['location']
         duration = obj['placeVisit']['duration']
-        p = m.Place(id=id,
+        p = Place(id=id,
                     start=duration["startTimestampMs"],
                     lat=location["latitudeE7"],
                     long=location["longitudeE7"],
@@ -51,7 +51,7 @@ def call_prolog_insert_positive(user_id, date):
             p += line
     p = PrologString(p)
     db = engine.prepare(p)
-    oldest_match = m.User.query.get(user_id).oldest_risk_date
+    oldest_match = User.query.get(user_id).oldest_risk_date
     if oldest_match is None:
         oldest_match = 0
     query = Term("insertPositive", Constant(user_id), Constant(date), Constant(oldest_match))
@@ -76,12 +76,12 @@ def find_all_prob():
     r = ddnnf.evaluate()
 
     items = []
-    if len(m.RedNode.query.all()) > 0:
+    if len(RedNode.query.all()) > 0:
         for key, value in r.items():
             start = "infect("
             end = ")"
             result = str(key)[len(start):-len(end)]
-            u = m.User.query.get(int(result))
+            u = User.query.get(int(result))
             items.append((u, value))
     return items
 
@@ -124,7 +124,7 @@ def find_user_prob(id):
                 vals.append(int(n.args[0]))
         min_val = min(vals)
         print("min: {}".format(min_val))
-        u = m.User.query.get(id)
+        u = User.query.get(id)
         u.oldest_risk_date = min_val
         db.session.commit()
 
@@ -133,48 +133,48 @@ def find_user_prob(id):
 
 # Ottieni tutti i nodi place
 def get_places():
-    return m.Place.query.all()
+    return Place.query.all()
 
 
 # Ottieni i place di un utente con la paginazione
 def get_user_places(page):
     print(current_user.get_id())
-    return m.Place.query.filter_by(id=current_user.get_id()).paginate(page=page, per_page=app.config["NODES_PER_PAGE"])
+    return Place.query.filter_by(id=current_user.get_id()).paginate(page=page, per_page=app.config["NODES_PER_PAGE"])
 
 
 # Ottieni tutti i nodi rossi
 def get_red_nodes():
-    return m.RedNode.query.all()
+    return RedNode.query.all()
 
 
 # Ottieni tutti gli utenti
 def get_users():
-    return m.User.query.all()
+    return User.query.all()
 
 
 # Imposta l'utente come positivo nel database
 def set_user_positive(id, date):
-    u = m.User.query.get(id)
+    u = User.query.get(id)
     u.positive = True
     u.test_date = date
     db.session.commit()
 
 
 def is_positive(id):
-    u = m.User.query.get(id)
+    u = User.query.get(id)
     return u.positive
 
 
 def is_positive_through_cf(cf):
-    u = m.User.query.filter_by(cf=cf).first()
+    u = User.query.filter_by(cf=cf).first()
     return u.positive
 
 
 # Scrivi nel database un nodo rosso
 def add_rednode(prob, start, lat, long, finish, place):
-    exists = db.session.query(db.exists().where(m.RedNode.start == start and m.RedNode.placeId == place)).scalar()
+    exists = db.session.query(db.exists().where(RedNode.start == start and RedNode.placeId == place)).scalar()
     if not exists:
-        r = m.RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
+        r = RedNode(prob=prob, start=start, lat=lat, long=long, finish=finish, placeId=place)
         db.session.add(r)
         db.session.commit()
     else:
@@ -182,19 +182,22 @@ def add_rednode(prob, start, lat, long, finish, place):
 
 
 # Aggiunge un utente al database
-def add_user(user):
+def add_user(user_id):
+    user = User.query.get(int(user_id))
     db.session.add(user)
     db.session.commit()
 
+
 # Elimina un utente nell database
-def delete_user(user):
+def delete_user(user_id):
+    user = User.query.get(int(user_id))
     db.session.delete(user)
     db.session.commit()
 
 
 # Elimina tutti i nodi verdi
 def clean_green_nodes():
-    gnodes = m.Place.query.all()
+    gnodes = Place.query.all()
     for g in gnodes:
         db.session.delete(g)
     db.session.commit()
@@ -202,7 +205,7 @@ def clean_green_nodes():
 
 # Elimina tutti i nodi verdi di un utente
 def clean_user_green_nodes(uid):
-    gnodes = m.Place.query.filter_by(id=uid).all()
+    gnodes = Place.query.filter_by(id=uid).all()
     for g in gnodes:
         db.session.delete(g)
     db.session.commit()
@@ -210,7 +213,7 @@ def clean_user_green_nodes(uid):
 
 # Elimina tutti i nodi rossi
 def clean_red_nodes():
-    rnodes = m.RedNode.query.all()
+    rnodes = RedNode.query.all()
     for r in rnodes:
         db.session.delete(r)
     db.session.commit()
@@ -218,7 +221,7 @@ def clean_red_nodes():
 
 # Rimette tutti gli utenti a negativo
 def reset_all_users():
-    users = m.User.query.all()
+    users = User.query.all()
     for u in users:
         u.positive = False
         u.test_date = None
@@ -228,7 +231,7 @@ def reset_all_users():
 
 # Rimette un utente a negativo
 def reset_user(uid):
-    u = m.User.query.get(uid)
+    u = User.query.get(uid)
     u.positive = False
     u.test_date = None
     u.oldest_risk_date = None
@@ -237,18 +240,18 @@ def reset_user(uid):
 
 def get_current_user_ID():
     internal_id = current_user.get_id()
-    user = m.load_user(internal_id)
+    user = load_user(internal_id)
     return user.id
 
 
 def get_user_ID(cf):
-    user = m.User.query.filter_by(cf=cf).first()
+    user = User.query.filter_by(cf=cf).first()
     return user.id
 
 
 def get_current_username():
     internal_id = current_user.get_id()
-    user = m.load_user(internal_id)
+    user = load_user(internal_id)
     return user.username
 
 
