@@ -316,7 +316,7 @@ def generate_random_takeout():
     random.seed()
     dt_obj = datetime.now()
     # dt_obj = datetime.strptime("2020-01-01 12:00", '%Y-%m-%d %H:%M')
-    start_time = (dt_obj.timestamp() - 432000) * 1000
+    start_time = int((dt_obj.timestamp() - 432000) * 1000)
     time_step = 900000  # 15 minuti in millisecondi
     start_time += random.randrange(0, 8) * time_step
 
