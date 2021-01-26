@@ -26,9 +26,12 @@ login.login_view = 'login'  # Flask-Login needs to know what is the view functio
 
 from routes import admin, health_worker, home, user
 
+
 import models as m
+
+
 def clean_all_old_nodes():
-    expire_limit = (time.time() - 2592000)*1000 # data corrente meno 30 giorni in millisecondi
+    expire_limit = (time.time() - 2592000)*1000  # data corrente meno 30 giorni in millisecondi
     for place in m.Place.query.all():
         if place.finish < expire_limit:
             print("nodi verdi")
@@ -44,13 +47,6 @@ def clean_all_old_nodes():
 scheduler = BackgroundScheduler()
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":  # Serve in development che altrimenti viene eseguito 2 volte di fila
-    job = scheduler.add_job(clean_all_old_nodes, 'interval', seconds=5)
+    job = scheduler.add_job(clean_all_old_nodes, 'interval', seconds=3600)
 
 scheduler.start()
-
-
-
-
-
-
-

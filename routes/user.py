@@ -8,8 +8,6 @@ from decorators_filters import user_required
 
 from webapp import app
 
-from models import User
-
 
 @app.route('/view_user_places', methods=['GET'])
 @login_required
