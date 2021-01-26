@@ -1,9 +1,14 @@
-# OGGETTO DI CONFIGURAZIONE DI FLASK
+"""
+    Configurazioni generali per l'app FLASK
+    Inizializzazione dell'engine Problog
+
+"""
+
 from problog.engine import DefaultEngine
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-engine = DefaultEngine()
+engine = DefaultEngine()  # Engine problog, richiamato negli altri codici a tempo debito
 
 
 class Config(object):

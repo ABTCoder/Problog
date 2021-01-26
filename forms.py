@@ -1,3 +1,9 @@
+"""
+    Classi per la validazione dei dati dei vari form presenti nel sito
+    Richiamati nelle varie route
+
+"""
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
@@ -16,7 +22,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
-    cf = StringField('cf',validators=[DataRequired()])
+    cf = StringField('cf', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('password', validators=[DataRequired()])
     submit = SubmitField('register')

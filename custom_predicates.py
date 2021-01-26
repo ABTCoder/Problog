@@ -1,3 +1,8 @@
+"""
+    Funzioni Python custom richiamate nel codice Problog
+
+"""
+
 from problog.extern import problog_export, problog_export_raw, problog_export_nondet
 from problog.logic import *
 import haversine as hs
@@ -6,6 +11,7 @@ import numpy as np
 from datetime import datetime
 
 
+# Restituisce il tempo corrente in millisecondi, non utilizzato al momento
 @problog_export('-int')
 def current_time():
     date = datetime.now()
@@ -13,10 +19,18 @@ def current_time():
 
 
 # Calcolo sigmoide con parametri per la traslazione
+# X0 per traslare lungo l'asse X
+# a per allargare o restringere la sigmoide
 def sigmoid(x, x0, a):
     return 1 / (1 + np.exp(-(x-x0)/a))
 
 
+# Funzione di calcolo della probabilità in base alla distanza e al tempo di permanenza
+# Utilizzato in problog_predicates.pl
+# time: Tempo di permanenza in millisecondi
+# dist: Distanza dalle coordinate del nodo rosso in metri
+# indoor: Booleano che indica se il posto
+# prob: Probabilità del nodo rosso
 @problog_export('+int', '+float', '+int', '+float', '-float')
 def probability_curve(time, dist, indoor, prob):
     time = float(time/60000)  # Conversione in minuti
@@ -36,23 +50,25 @@ def probability_curve(time, dist, indoor, prob):
     return final
 
 
-@problog_export('+int','+int','+int','+int', '-float')
+# Funzione per calcolare la distanza in metri tra due coordinate GPS
+@problog_export('+int', '+int', '+int', '+int', '-float')
 def geo_distance(la1, lo1, la2, lo2):
 
-    loc1 = (np.double(la1) / 1E7, np.double(lo1)/ 1E7)
+    # Le coordinate di Coogle Takeout sono di tipo E7, ovvero moltiplicate per 10^7
+    # Quindi vanno riportate ai valori standard
+    loc1 = (np.double(la1) / 1E7, np.double(lo1) / 1E7)
     loc2 = (np.double(la2) / 1E7, np.double(lo2) / 1E7)
     dist = hs.haversine(loc1, loc2, hs.Unit.METERS)
-    # print("{} {} {} {}".format(la1, lo1, la2, lo2))
-    # print(str(dist) + " loc1: " + str(loc1) + " loc2: " + str(loc2))
 
     return dist
 
 
-@problog_export('+int','+int','+int','+int','-int','-int')
+# Funzione per calcolare le coordinate del punto medio tra due coordinate GPS
+# Utilizzato per la creazione dei nodi rossi derivati dall'intersezione di 2 nodi rossi
+@problog_export('+int', '+int', '+int', '+int', '-int', '-int')
 def midpoint(la1, lo1, la2, lo2):
-    # Input values as degrees
 
-    # Convert to radians
+    # Converte a radianti
     lat1 = math.radians(la1 / 1E7)
     lon1 = math.radians(lo1 / 1E7)
     lat2 = math.radians(la2 / 1E7)
@@ -70,14 +86,15 @@ def midpoint(la1, lo1, la2, lo2):
     return la_final, lo_final
 
 
-@problog_export_nondet('+float','+int','+int','+int','+int','+str')
+# Funzione richiamata per aggiungere un nodo rosso al database
+@problog_export_nondet('+float', '+int', '+int', '+int', '+int', '+str')
 def add_rednode(prob, start, lat, long, finish, place):
     place = place[1:-1]
-    # print("{} {} {} {} {} {}".format(prob, start, lat, long, finish, place))
     ef.add_rednode(prob, start, lat, long, finish, place)
     return [()]
 
 
+# Funzione richiamata per svuotare il database dai nodi rossi prima dell'inserimento di quelli nuovi
 @problog_export_nondet()
 def delete_old_nodes():
     ef.clean_red_nodes()

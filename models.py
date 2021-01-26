@@ -1,26 +1,35 @@
+"""
+    Modelli ORM per la traduzione tra oggetti Python e occorrenze del database (SQLite)
+
+    Ad ogni cambiamento:
+    flask db migrate -m "nome migration"
+    flask db upgrade
+
+    Per ricreare da capo il database eliminare app.db e la cartella migration
+    ed eseguire il seguente comando:
+    flask db init
+"""
+
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from webapp import db, login
 
-# Ad ogni cambiamento:
-# flask db migrate -m "nome migration"
-# flask db upgrade
 
-
-# UserMixin add some generic methods (is_authenticated, is_active, is_anonymous, get_id) to user
+# Modello dell'utente, estende due classi: UserMixin per le funzioni di autenticazione e db.Model per le funzioni ORM
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cf = db.Column(db.String(16), index=True, unique=True) # Codice Fiscale
+    cf = db.Column(db.String(16), index=True, unique=True)    # Codice Fiscale
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    test_date = db.Column(db.BigInteger)
-    oldest_risk_date = db.Column(db.BigInteger)
-    positive = db.Column(db.Boolean, default=False)
+    test_date = db.Column(db.BigInteger)                # Data del tampone
+    oldest_risk_date = db.Column(db.BigInteger)         # Data del nodo rosso più vecchio con cui si è stato in contatto
+    positive = db.Column(db.Boolean, default=False)     # Positività
     password_hash = db.Column(db.String(128))
-    role = db.Column(db.String(10), default="user")
+    role = db.Column(db.String(10), default="user")     # Ruoli: "user", "admin", "health"
 
-    def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
+    # Opzionale, per il debugging (tipo il .toString())
+    def __repr__(self):
         return '<User {}>'.format(self.username)
 
     def set_password(self, password):
@@ -35,28 +44,32 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+# Modello dei nodi verdi (PlaceVisit nel Google Takeout)
 class Place(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    start = db.Column(db.BigInteger, primary_key=True)
-    lat = db.Column(db.BigInteger, index=True)
-    long = db.Column(db.BigInteger, index=True)
-    finish = db.Column(db.BigInteger, index=True)
-    placeId = db.Column(db.String(100), index=True) #cambiare nome colonna con 'name'
-    indoor = db.Column(db.Integer, index=True)
+    start = db.Column(db.BigInteger, primary_key=True)      # Tempo di inizio
+    lat = db.Column(db.BigInteger, index=True)              # Latitudine (*10^7)
+    long = db.Column(db.BigInteger, index=True)             # Longitudine (*10*7)
+    finish = db.Column(db.BigInteger, index=True)           # Tempo di fine
+    placeId = db.Column(db.String(100), index=True)         # Nome del placeVisit
+    indoor = db.Column(db.Integer, index=True)              # Indica se il posto è al chiuso o meno
 
-    def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
+    # Opzionale, per il debugging (tipo il .toString())
+    def __repr__(self):
         return '<Place {0}, {1}, {2}>'.format(self.id, self.start, self.placeId)
 
 
+# Modello del nodo rosso (posti con probabilità di infezione)
 class RedNode(db.Model):
     __tablename__ = 'db'
-    prob = db.Column(db.Float(), index=True)
-    start = db.Column(db.BigInteger, primary_key=True)
-    lat = db.Column(db.BigInteger, index=True)
-    long = db.Column(db.BigInteger, index=True)
-    finish = db.Column(db.BigInteger, index=True)
-    placeId = db.Column(db.String(100), primary_key=True)
+    prob = db.Column(db.Float(), index=True)                # Probabilità
+    start = db.Column(db.BigInteger, primary_key=True)      # Tempo di inizio
+    lat = db.Column(db.BigInteger, index=True)              # Latitudine (*10^7)
+    long = db.Column(db.BigInteger, index=True)             # Longitudine (*10*7)
+    finish = db.Column(db.BigInteger, index=True)           # Tempo di fine
+    placeId = db.Column(db.String(100), primary_key=True)   # Nome del placeVisit da cui è stato ricavato
 
-    def __repr__(self):  # Opzionale, per il debugging (tipo il .toString())
+    # Opzionale, per il debugging (tipo il .toString())
+    def __repr__(self):
         return '<RedNode {0}, {1}, {2}>'.format(self.prob, self.start, self.placeId)
 

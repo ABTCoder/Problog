@@ -1,3 +1,15 @@
+"""
+    Webapp, punto di raccolta di tutte le funzioni del progetto
+    Avviare una volta attivato il virtual environment attraverso i comandi
+    (Solo fase di sviluppo)
+        set FLASK_APP=webapp
+        set FLASK_ENV=development
+        flask run
+
+    In Linux potrebbe essere necessario sostituire utilizzare export invece di set
+
+"""
+
 import os
 
 from flask import Flask
@@ -15,21 +27,23 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 
-# Flask - DB initialization
+# Flask - Inizializzazione del database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-# Flask - Login initialization
+# Flask - Inizializzazione del sistema di login
 login = LoginManager(app)
-login.login_view = 'login'  # Flask-Login needs to know what is the view function that handles logins
+login.login_view = 'login'  # Si indica a Flask-login quale funzione gestisce il login
 
+# Importazione delle route
 from routes import admin, health_worker, home, user
 
 
 import models as m
 
 
+# Funzione per pulire i nodi verdi e rossi più vecchi di 30 giorni
 def clean_all_old_nodes():
     expire_limit = (time.time() - 2592000)*1000  # data corrente meno 30 giorni in millisecondi
     for place in m.Place.query.all():

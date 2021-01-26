@@ -1,3 +1,9 @@
+"""
+    Decoratori (annotazioni) per definire i permessi di accesso in base al campo 'role' di un utente
+    e template filter per formattare diversamente alcuni valori negli HTML
+
+"""
+
 from functools import wraps
 
 from flask import flash, redirect, url_for
@@ -7,7 +13,7 @@ from webapp import app
 import numpy as np
 
 
-# Decoratori (annotazione) per definire i permessi per accedere ad una pagina
+# Decoratore per i permessi di admin, utilizzato nelle rotte definite in admin.py
 def admin_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
@@ -19,6 +25,7 @@ def admin_required(func):
     return wrap
 
 
+# Decoratore per i permessi di operatore sanitario, utilizzato nelle rotte definite in health_worker.py
 def health_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
@@ -30,6 +37,7 @@ def health_required(func):
     return wrap
 
 
+# Decoratore per i permessi di utente standard, utilizzato nelle rotte definite in user.py
 def user_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
@@ -40,6 +48,7 @@ def user_required(func):
             return redirect(url_for('index'))
 
     return wrap
+
 
 # Filtro HTML per convertire il tempo da millisecondi a datetime
 @app.template_filter('ctime')

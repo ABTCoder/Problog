@@ -1,3 +1,8 @@
+"""
+    Varie funzioni utilizzate nelle route web e altrove
+
+"""
+
 import codecs
 from datetime import datetime
 
@@ -19,6 +24,9 @@ from models import *
 from webapp import db, app
 
 
+# Funzione che stabilisce se un luogo è al chiuso o all'aperto in base alle parole contenute nel nome
+# Questa funzione può essere migliorata ulteriormente in sviluppi futuri aggiungendo nuovi termini chiavi
+# o con un metodo più sofisticato
 def indoor_check(name):
     cases = ["piazza", "via", "parco", "fontana", "laghetti", "parcheggio"]
     for case in cases:
@@ -27,7 +35,11 @@ def indoor_check(name):
     return 1
 
 
-def main_parser(id, file):
+# Parser del file Json Google Takeout
+# uid: Id dell'utente
+# file: File del Json (caricato con open() o come nel nostro caso passato tramite form)
+# Vengono scartati i placeVisit più vecchi di 30 giorni dalla data odierna
+def main_parser(uid, file):
     try:
         json_dict = json.load(file)
         for obj in json_dict['timelineObjects']:
@@ -36,13 +48,13 @@ def main_parser(id, file):
             duration = obj['placeVisit']['duration']
             prev = datetime.now().timestamp() - 2592000
             if int(duration["endTimestampMs"]) / 1000 > prev:
-                p = Place(id=id,
-                            start=duration["startTimestampMs"],
-                            lat=location["latitudeE7"],
-                            long=location["longitudeE7"],
-                            finish=duration["endTimestampMs"],
-                            placeId=location["name"],
-                            indoor=indoor_check(location["name"]))
+                p = Place(id=uid,
+                          start=duration["startTimestampMs"],
+                          lat=location["latitudeE7"],
+                          long=location["longitudeE7"],
+                          finish=duration["endTimestampMs"],
+                          placeId=location["name"],
+                          indoor=indoor_check(location["name"]))
                 db.session.add(p)
         db.session.commit()
     except:
@@ -50,18 +62,24 @@ def main_parser(id, file):
     return True
 
 
+# Funzione che richiama Problog per inserire un positivo e generare i nodi rossi
+# user_id: Id dell'utente
+# date: Data del tampone in millisecondi
 def call_prolog_insert_positive(user_id, date):
     p = ""
+    # main_sanita.pl è in utf-16
     with codecs.open("prolog/main_sanita.pl", "r", "utf-16") as f:
         for line in f:
             p += line
-    p = PrologString(p)
-    db = engine.prepare(p)
+
+    p = PrologString(p)  # Creazione di un programma Problog
+    dbp = engine.prepare(p)  # Preparazione del programma in un formato comodo per l'engine Problog
+    # Data del nodo rosso più vecchio con cui ha avuto un contatto
     oldest_match = User.query.get(user_id).oldest_risk_date
     if oldest_match is None:
         oldest_match = 0
     query = Term("insertPositive", Constant(user_id), Constant(date), Constant(oldest_match))
-    res = engine.query(db, query)
+    res = engine.query(dbp, query)  # Esecuzione della query
 
 
 # Trova la probabilità di tutti
@@ -74,13 +92,16 @@ def find_all_prob():
     # Calcolo probabilità tramite problog
     ps += "query(infect(_))."
     p = PrologString(ps)
-    db = engine.prepare(p)
+    dbp = engine.prepare(p)
     lf = LogicFormula.create_from(p)  # ground the program
     dag = LogicDAG.create_from(lf)  # break cycles in the ground program
     cnf = CNF.create_from(dag)  # convert to CNF
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
 
+    # Siccome Problog restituisce un dizionario struttrato in questa maniera:
+    # {query(infect(2)): 0.67, query(infect(3)): 0.8, ...}
+    # Bisogna estrarre ogni id dalla chiave nel seguente modo
     items = []
     if len(RedNode.query.all()) > 0:
         for key, value in r.items():
@@ -93,7 +114,7 @@ def find_all_prob():
 
 
 # Trova la probabilità di un singolo individuo
-def find_user_prob(id):
+def find_user_prob(uid):
     ps = ""
     with open("prolog/problog_predicates.pl", "r") as f:
         for line in f:
@@ -106,7 +127,7 @@ def find_user_prob(id):
     res = engine.query(dbp, query)
 
     # Calcolo probabilità tramite problog
-    ps += "query(infect(" + str(id) + "))."
+    ps += "query(infect(" + str(uid) + "))."
     p = PrologString(ps)
     dbp = engine.prepare(p)
     lf = LogicFormula.create_from(p)  # ground the program
@@ -115,22 +136,20 @@ def find_user_prob(id):
     ddnnf = DDNNF.create_from(cnf)  # compile CNF to ddnnf
     r = ddnnf.evaluate()
 
-    # Salvataggio nel database SQLite della data più vecchia per cui ha trovato un match
+    # Salvataggio nel database SQLite della data del nodo rosso più vecchio con cui è stato a contatto
     term = Term("date", None)
-    database = problog_export.database
+    database = problog_export.database  # Database interno di Problog dove vengono salvati i fatti con assertz()
     node_key = database.find(term)
     if node_key is not None:
         node = database.get_node(node_key)
-        dates = node.children.find(term.args)
+        dates = node.children.find(term.args)  # Tutti i fatti date/1 inseriti con assertz/1
         vals = []
         if dates:
             for date in dates:
                 n = database.get_node(date)
-                print(n.args[0])
                 vals.append(int(n.args[0]))
-        min_val = min(vals)
-        print("min: {}".format(min_val))
-        u = User.query.get(id)
+        min_val = min(vals)  # Trova la data (in millisecondi) minima
+        u = User.query.get(uid)
         u.oldest_risk_date = min_val
         db.session.commit()
 
@@ -159,24 +178,28 @@ def get_users():
 
 
 # Imposta l'utente come positivo nel database
-def set_user_positive(id, date):
-    u = User.query.get(id)
+# id: Id dell'utente
+# date: Data del tampone in millisecondi
+def set_user_positive(uid, date):
+    u = User.query.get(uid)
     u.positive = True
     u.test_date = date
     db.session.commit()
 
 
-def is_positive(id):
-    u = User.query.get(id)
+# Restituisce la positività di un utente
+def is_positive(uid):
+    u = User.query.get(uid)
     return u.positive
 
 
+# Restituisce la positività di un utente passando il codice fiscale
 def is_positive_through_cf(cf):
     u = User.query.filter_by(cf=cf).first()
     return u.positive
 
 
-# Scrivi nel database un nodo rosso
+# Scrive nel database un nodo rosso
 def add_rednode(prob, start, lat, long, finish, place):
     exists = db.session.query(db.exists().where(RedNode.start == start and RedNode.placeId == place)).scalar()
     if not exists:
@@ -252,58 +275,67 @@ def reset_user(uid):
     db.session.commit()
 
 
+# Ottiene l'id dell'utente corrente
+# Altrimenti usare semplicemente current_user.id
 def get_current_user_ID():
     internal_id = current_user.get_id()
     user = load_user(internal_id)
     return user.id
 
 
+# Ottiene l'id dell'utente con un dato codice fiscale
 def get_user_ID(cf):
     user = User.query.filter_by(cf=cf).first()
     return user.id
 
 
+# Ottiene l'username dell'utente corrente
+# Altrimenti usare semplicemente current_user.username
 def get_current_username():
     internal_id = current_user.get_id()
     user = load_user(internal_id)
     return user.username
 
 
+# Avvia la funzione per il calcolo della probabilità di un utente per l'utente corrente
 def get_current_prob():
-    id = get_current_user_ID()
-    r = find_user_prob(id)
-    l = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è in un formato strano (non stringa)
-    return r[l[0]]
+    uid = get_current_user_ID()
+    r = find_user_prob(uid)
+    ls = list(r.keys())  # Bisogna manualmente estrarre la chiave perchè è un oggetto anziche stringa
+    return r[ls[0]]
 
 
+# Genera un numero random tra -50 e 50 per variare le coordinate GPS nella funzione generate_random_takeout()
 def rand_loc():
     return random.randrange(-50, 50)
 
 
+# Funzione che genera un Google Takeout random per il testing
+# Vedere l'array in fondo per aggiungere o rimuovere i luoghi di test
 def generate_random_takeout():
     random.seed()
     dt_obj = datetime.now()
     # dt_obj = datetime.strptime("2020-01-01 12:00", '%Y-%m-%d %H:%M')
-    start_time = (dt_obj.timestamp() - 432000)  * 1000
+    start_time = (dt_obj.timestamp() - 432000) * 1000
     time_step = 900000  # 15 minuti in millisecondi
-    start_time += random.randrange(0, 8)*time_step
+    start_time += random.randrange(0, 8) * time_step
 
     timeline = []
     for i in range(30):
         place = random.choice(places)
         elem = {"placeVisit": {
-                    "location": {
-                        "latitudeE7": place[1] + rand_loc(),
-                        "longitudeE7": place[2] + rand_loc(),
-                        "name": place[0]
-                    },
-                    "duration": {
-                        "startTimestampMs": start_time,
-                        "endTimestampMs": start_time + random.randrange(1,8)*time_step
-                    }
-                }}
+            "location": {
+                "latitudeE7": place[1] + rand_loc(),
+                "longitudeE7": place[2] + rand_loc(),
+                "name": place[0]
+            },
+            "duration": {
+                "startTimestampMs": start_time,
+                "endTimestampMs": start_time + random.randrange(1, 8) * time_step
+            }
+        }}
         timeline.append(elem)
-        start_time += random.randrange(9, 32)*time_step
+        start_time += random.randrange(9, 32) * time_step
     obj = {"timelineObjects": timeline}
     return json.dumps(obj)
 

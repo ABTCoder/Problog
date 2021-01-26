@@ -1,3 +1,8 @@
+"""
+    Rotte web per le funzioni di un utente standard
+
+"""
+
 import os
 from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
@@ -9,6 +14,7 @@ from decorators_filters import user_required
 from webapp import app
 
 
+# Pagina per visualizzare tutti i nodi verdi (PlaceVisit) caricati tramite Google Takeout
 @app.route('/view_user_places', methods=['GET'])
 @login_required
 @user_required
@@ -23,6 +29,7 @@ def allowed_file(filename):
     return os.path.splitext(filename)[-1] in app.config["ALLOWED_EXTENSIONS"]
 
 
+# Funzione per caricare il proprio Google Takeout
 @app.route('/load_takeout', methods=['POST'])
 @login_required
 def load_takeout():
@@ -47,6 +54,7 @@ def load_takeout():
         return redirect(url_for("index"))
 
 
+# Pagina web per modificare i propri dati d'account
 @app.route('/account', methods=['GET', 'POST'])
 @user_required
 def account():
