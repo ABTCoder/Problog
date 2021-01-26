@@ -193,6 +193,15 @@ def add_user(user):
     db.session.commit()
 
 
+# Aggiorna un utente
+def update_user(user_id, username, email, cf):
+    user = User.query.get(int(user_id))
+    user.username = username
+    user.email = email
+    user.cf = cf
+    db.session.commit()
+
+
 # Elimina un utente nell database
 def delete_user(user_id):
     user = User.query.get(int(user_id))

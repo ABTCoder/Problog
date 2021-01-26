@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from datetime import datetime
+from flask_login import current_user
 
 from models import User
 
@@ -23,7 +24,34 @@ class RegistrationForm(FlaskForm):
     # When you add any methods that match the pattern validate_<field_name>, WTForms takes those as
     # custom validators and invokes them in addition to the stock validators
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        if current_user.username != username.data:
+            user = User.query.filter_by(username=username.data).first()
+            if user is not None:
+                raise ValidationError('Username utilizzato. Riprova')
+
+    def validate_cf(self, cf):
+        if current_user.cf != cf.data:
+            user = User.query.filter_by(cf=cf.data).first()
+            if user is not None or len(cf.data)!=16:
+                raise ValidationError('Codice fiscale errato. Riprova')
+
+    def validate_email(self, email):
+        if current_user.email != email.data:
+            user = User.query.filter_by(email=email.data).first()
+            if user is not None:
+                raise ValidationError('Email già utilizzata. Riprova')
+
+
+class AccountForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    cf = StringField('cf',validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('save')
+
+    # When you add any methods that match the pattern validate_<field_name>, WTForms takes those as
+    # custom validators and invokes them in addition to the stock validators
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).all()
         if user is not None:
             raise ValidationError('Username utilizzato. Riprova')
 
