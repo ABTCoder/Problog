@@ -24,34 +24,7 @@ class RegistrationForm(FlaskForm):
     # When you add any methods that match the pattern validate_<field_name>, WTForms takes those as
     # custom validators and invokes them in addition to the stock validators
     def validate_username(self, username):
-        if current_user.username != username.data:
-            user = User.query.filter_by(username=username.data).first()
-            if user is not None:
-                raise ValidationError('Username utilizzato. Riprova')
-
-    def validate_cf(self, cf):
-        if current_user.cf != cf.data:
-            user = User.query.filter_by(cf=cf.data).first()
-            if user is not None or len(cf.data)!=16:
-                raise ValidationError('Codice fiscale errato. Riprova')
-
-    def validate_email(self, email):
-        if current_user.email != email.data:
-            user = User.query.filter_by(email=email.data).first()
-            if user is not None:
-                raise ValidationError('Email già utilizzata. Riprova')
-
-
-class AccountForm(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
-    cf = StringField('cf',validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('save')
-
-    # When you add any methods that match the pattern validate_<field_name>, WTForms takes those as
-    # custom validators and invokes them in addition to the stock validators
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).all()
+        user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError('Username utilizzato. Riprova')
 
@@ -64,6 +37,33 @@ class AccountForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Email già utilizzata. Riprova')
+
+
+class AccountForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    cf = StringField('cf',validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('save')
+
+    # When you add any methods that match the pattern validate_<field_name>, WTForms takes those as
+    # custom validators and invokes them in addition to the stock validators
+    def validate_username(self, username):
+        if current_user.username != username.data:
+            user = User.query.filter_by(username=username.data).first()
+            if user is not None:
+                raise ValidationError('Username utilizzato. Riprova')
+
+    def validate_cf(self, cf):
+        if current_user.cf != cf.data:
+            user = User.query.filter_by(cf=cf.data).first()
+            if user is not None or len(cf.data) != 16:
+                raise ValidationError('Codice fiscale errato. Riprova')
+
+    def validate_email(self, email):
+        if current_user.email != email.data:
+            user = User.query.filter_by(email=email.data).first()
+            if user is not None:
+                raise ValidationError('Email già utilizzata. Riprova')
 
 
 class InsertPositiveForm(FlaskForm):

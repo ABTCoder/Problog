@@ -52,17 +52,14 @@ def load_takeout():
 @app.route('/account', methods=['GET', 'POST'])
 @user_required
 def account():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = forms.AccountForm()
     # validate_on_submit() method is going to return False in case the function skips the if
     # statement and goes directly to render the template in the last line of the function
     if request.method == "POST" and form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, cf=form.cf.data)
-        user.set_password(form.password.data)
-        ef.add_user(user)  # external function for db population
-        flash('Congratulazioni, hai un account!')
-        return redirect(url_for('login'))
+        ef.update_user(current_user.id, form.username.data, form.email.data, form.cf.data)
+        flash('I tuoi dati sono stati modificati correttamente')
+        return redirect(url_for('account'))
         # render_template() takes a template filename and a variable list of template arguments and returns
         # the same template, but with all the placeholders in it replaced with actual values.
-    return render_template('register.html', title='Register', form=form)
+    return render_template('account.html', title='I tuoi dati', form=form, email=current_user.email,
+                           username=current_user.username, cf=current_user.cf)
