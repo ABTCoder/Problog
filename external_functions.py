@@ -108,8 +108,11 @@ def find_all_prob():
             start = "infect("
             end = ")"
             result = str(key)[len(start):-len(end)]
-            u = User.query.get(int(result))
-            items.append((u, value))
+            try:
+                u = User.query.get(int(result))
+                items.append((u, value))
+            except ValueError:
+                continue
     return items
 
 

@@ -12,7 +12,7 @@ engine = DefaultEngine()  # Engine problog, richiamato negli altri codici a temp
 
 
 class Config(object):
-    SECRET_KEY = "Contracciami Key"
+    SECRET_KEY = "Contracciami-NwhQap8Y66"
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

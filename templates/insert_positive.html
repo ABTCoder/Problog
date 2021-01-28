@@ -16,7 +16,7 @@
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
             <label class="col-form-label col-form-label-lg" for="id_pos_date">Inserire la data di effettuazione del tampone:</label>
-            <input class="form-control form-control-lg" type="datetime-local" id="id_pos_date" name="date">
+            <input class="form-control form-control-lg" type="datetime-local" placeholder="gg/mm/aaaa HH:MM" id="id_pos_date" name="date">
              {% for error in form.date.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
